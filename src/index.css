@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- semantic tokens ported from colors_and_type.css (design system bundle) ----
+   Used mainly by the print documents (Proposal, Schedule), which reference these
+   directly rather than the os-* Tailwind color scale. */
+:root {
+  --fg1: #1d1d1e; /* os-ink */
+  --fg2: #57575a; /* os-700 */
+  --fg3: #918f92; /* os-500 */
+  --border: #e5e4e6; /* os-200 */
+  --border-strong: #d2d1d3; /* os-300 */
+  --font-display: Arial, "Helvetica Neue", sans-serif;
+  --font-sans: Arial, "Helvetica Neue", sans-serif;
+  --font-body-doc: Arial, "Helvetica Neue", sans-serif;
+}
+
+/* ---- ported 1:1 from Ossa Fee Proposal App.dc.html <helmet><style> block ---- */
+
+body {
+  margin: 0;
+  background: theme("colors.os-100");
+  font-family: theme("fontFamily.sans");
+}
+a {
+  color: theme("colors.accent");
+}
+a:hover {
+  color: theme("colors.accent-hover");
+}
+input,
+select,
+button,
+textarea {
+  font-family: inherit;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid theme("colors.os-orange");
+  outline-offset: -1px;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Screen-only premium micro-interaction layer. Must never apply to print
+   output (.print-proposal / .pr-page) -- see @media print override below. */
+@media screen {
+  input,
+  select,
+  textarea {
+    transition:
+      border-color 220ms theme("transitionTimingFunction.os"),
+      box-shadow 220ms theme("transitionTimingFunction.os"),
+      background 220ms theme("transitionTimingFunction.os");
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    box-shadow: 0 0 0 4px theme("colors.os-orange-100");
+  }
+  button {
+    transition:
+      background 220ms theme("transitionTimingFunction.os"),
+      border-color 220ms theme("transitionTimingFunction.os"),
+      color 220ms theme("transitionTimingFunction.os"),
+      box-shadow 220ms theme("transitionTimingFunction.os"),
+      transform 150ms theme("transitionTimingFunction.os");
+  }
+  main section {
+    animation: osFadeUp 300ms theme("transitionTimingFunction.os");
+  }
+}
+
+.print-proposal,
+.print-proposal * {
+  animation: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  body {
+    background: #fff;
+  }
+  aside,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .print-only {
+    display: none !important;
+  }
+  .pr-page {
+    break-after: page;
+  }
+  .pr-page:last-child {
+    break-after: auto;
+  }
+  .print-proposal p {
+    orphans: 3;
+    widows: 3;
+  }
+}
