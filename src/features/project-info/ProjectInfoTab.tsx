@@ -15,7 +15,6 @@ export function ProjectInfoTab() {
     areaRows,
     onAddArea,
     goRows,
-    goWeightTotal,
     goWeightedTotal,
     goPctLabel,
     verdict,
@@ -32,8 +31,17 @@ export function ProjectInfoTab() {
         statusPill={{ label: projectStatusLabel, color: projectStatusPillColor }}
       />
 
-      <div className="grid grid-cols-2 gap-9 max-md:grid-cols-1">
-        <section className="min-w-0">
+      {/*
+        Laid out as an explicit 2-col/2-row grid (not two independent
+        <section> columns) so "Basic Services" and "Project Areas" land on
+        the same grid row and align horizontally regardless of how tall
+        the Client Information vs. Project Information blocks above them
+        are -- CSS Grid auto-sizes each row to its tallest item, so this
+        holds without a hand-tuned margin-top magic number.
+      */}
+      <div className="grid grid-cols-2 gap-x-9 max-md:grid-cols-1">
+        {/* row 1, col 1 */}
+        <div className="min-w-0">
           <SectionHeader className="mb-[14px]">Client Information</SectionHeader>
           <div className="grid grid-cols-[110px_1fr] gap-x-[14px] gap-y-[10px] items-center">
             <FieldLabel>Company</FieldLabel>
@@ -61,27 +69,10 @@ export function ProjectInfoTab() {
               placeholder="Street, City, State Zip"
             />
           </div>
+        </div>
 
-          <SectionHeader className="mt-[66px] mb-[14px]">Basic Services</SectionHeader>
-          <div className="flex flex-col gap-2">
-            {basicServiceRows.map((s) => (
-              <CheckboxRow key={s.key} checked={s.checked} onChange={s.onChange}>
-                {s.label}
-              </CheckboxRow>
-            ))}
-          </div>
-
-          <SectionHeader className="mt-[26px] mb-[14px]">Other Services</SectionHeader>
-          <div className="flex flex-col gap-2">
-            {additionalServiceRows.map((s) => (
-              <CheckboxRow key={s.key} checked={s.checked} onChange={s.onChange}>
-                {s.label}
-              </CheckboxRow>
-            ))}
-          </div>
-        </section>
-
-        <section className="min-w-0">
+        {/* row 1, col 2 */}
+        <div className="min-w-0">
           <SectionHeader className="mb-[14px]">Project Information</SectionHeader>
           <div className="grid grid-cols-[130px_1fr] gap-x-[14px] gap-y-[10px] items-center mb-[26px]">
             <FieldLabel>Project Name</FieldLabel>
@@ -112,8 +103,32 @@ export function ProjectInfoTab() {
             />
             Public Sector Project
           </label>
+        </div>
 
-          <SectionHeader className="mt-[30px] mb-[14px]">Project Areas</SectionHeader>
+        {/* row 2, col 1 -- aligns with Project Areas below via grid row-sizing */}
+        <div className="min-w-0 mt-[26px]">
+          <SectionHeader className="mb-[14px]">Basic Services</SectionHeader>
+          <div className="flex flex-col gap-2">
+            {basicServiceRows.map((s) => (
+              <CheckboxRow key={s.key} checked={s.checked} onChange={s.onChange}>
+                {s.label}
+              </CheckboxRow>
+            ))}
+          </div>
+
+          <SectionHeader className="mt-[26px] mb-[14px]">Other Services</SectionHeader>
+          <div className="flex flex-col gap-2">
+            {additionalServiceRows.map((s) => (
+              <CheckboxRow key={s.key} checked={s.checked} onChange={s.onChange}>
+                {s.label}
+              </CheckboxRow>
+            ))}
+          </div>
+        </div>
+
+        {/* row 2, col 2 */}
+        <div className="min-w-0 mt-[26px]">
+          <SectionHeader className="mb-[14px]">Project Areas</SectionHeader>
           <div className="overflow-x-auto">
             <div className="grid grid-cols-[1fr_152px_70px_34px] gap-x-2 py-[9px] border-b border-os-300 min-w-[420px]">
               <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600">Space Name</div>
@@ -161,23 +176,20 @@ export function ProjectInfoTab() {
               <div />
             </div>
           </div>
-        </section>
+        </div>
       </div>
 
       <section className="mt-[38px]">
-        <SectionHeader note="— 1 = No/Low, 2 = Neutral, 3 = Yes/High. Weight 1–3 (3 = matters most).">
-          Go / No-Go Scorecard
-        </SectionHeader>
+        <SectionHeader>Go / No-Go Scorecard</SectionHeader>
         <div className="grid grid-cols-[1fr_320px] gap-9 items-start mt-[14px] max-md:grid-cols-1">
           <div className="overflow-x-auto">
-            <div className="grid grid-cols-[1fr_100px_100px_80px] gap-x-3 pb-[9px] border-b-2 border-os-ink min-w-[400px]">
+            <div className="grid grid-cols-[1fr_100px_80px] gap-x-3 pb-[9px] border-b-2 border-os-ink min-w-[400px]">
               <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600">Question</div>
               <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600 text-center">Score (1–3)</div>
-              <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600 text-center">Weight (1–3)</div>
               <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600 text-right">Weighted</div>
             </div>
             {goRows.map((r, i) => (
-              <div key={i} className="grid grid-cols-[1fr_100px_100px_80px] gap-x-3 py-[6px] border-b border-os-200 items-center min-w-[400px]">
+              <div key={i} className="grid grid-cols-[1fr_100px_80px] gap-x-3 py-[6px] border-b border-os-200 items-center min-w-[400px]">
                 <div className="font-light text-[13.5px] text-os-800">{r.q}</div>
                 <CreamSelect
                   value={r.score}
@@ -188,22 +200,12 @@ export function ProjectInfoTab() {
                   <option value={2}>2</option>
                   <option value={3}>3</option>
                 </CreamSelect>
-                <CreamSelect
-                  value={r.weight}
-                  onChange={(e) => r.onWeight(parseInt(e.target.value, 10) || 1)}
-                  className="justify-self-center px-2 py-[6px] text-[13px] w-auto"
-                >
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                </CreamSelect>
                 <div className="font-medium text-[13.5px] text-os-ink text-right tabular-nums">{r.weighted}</div>
               </div>
             ))}
-            <div className="grid grid-cols-[1fr_100px_100px_80px] gap-x-3 pt-[11px] min-w-[400px]">
+            <div className="grid grid-cols-[1fr_100px_80px] gap-x-3 pt-[11px] min-w-[400px]">
               <div className="font-bold text-[13px] text-os-ink">TOTALS</div>
               <div />
-              <div className="font-bold text-[13px] text-os-ink text-center">{goWeightTotal}</div>
               <div className="font-bold text-[13px] text-os-ink text-right">{goWeightedTotal}</div>
             </div>
           </div>
