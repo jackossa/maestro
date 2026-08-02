@@ -34,7 +34,7 @@ export function FeeCalculationTab() {
                   step={0.5}
                   value={r.selPct}
                   onChange={(e) => r.onSelPct(parseFloat(e.target.value) || 0)}
-                  className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink"
+                  className={`box-border w-full px-[7px] py-[5px] border rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink ${fc.feeSelect === "Method 1 - % of Construction" ? "border-os-orange" : "border-os-300"}`}
                 />
                 <div className="font-medium text-[13px] text-os-ink text-right tabular-nums">{r.m1Disp}</div>
                 <input
@@ -42,7 +42,7 @@ export function FeeCalculationTab() {
                   inputMode="decimal"
                   value={r.selSF}
                   onChange={(e) => r.onSelSF(parseFloat(e.target.value.replace(/[^0-9.]/g, "")) || 0)}
-                  className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink"
+                  className={`box-border w-full px-[7px] py-[5px] border rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink ${fc.feeSelect === "Method 2 - $/SF" ? "border-os-orange" : "border-os-300"}`}
                 />
                 <div className="font-medium text-[13px] text-os-ink text-right tabular-nums">{r.m2Disp}</div>
               </div>
@@ -180,7 +180,7 @@ export function FeeCalculationTab() {
                   inputMode="decimal"
                   value={r.amtDisp}
                   onChange={(e) => r.onAmt(e.target.value)}
-                  className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink"
+                  className="box-border w-full px-[7px] py-[5px] border border-os-orange rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink"
                 />
                 <div className="font-light text-[12.5px] text-os-700 text-right">{r.pctDisp}</div>
                 <div className="font-light text-[12.5px] text-os-500 text-right">{r.sfDisp}</div>
@@ -213,7 +213,7 @@ export function FeeCalculationTab() {
                 inputMode="decimal"
                 value={fc.reimb}
                 onChange={(e) => fc.onReimb(e.target.value)}
-                className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink"
+                className="box-border w-full px-[7px] py-[5px] border border-os-orange rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-right text-os-ink"
               />
               <div />
               <div />
@@ -251,7 +251,8 @@ export function FeeCalculationTab() {
               <select
                 value={fc.feeSelect}
                 onChange={(e) => fc.onFeeSelect(e.target.value)}
-                className="box-border w-full px-[9px] py-[7px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-os-ink"
+                title="This choice picks the Architectural Fee for the whole total"
+                className="box-border w-full px-[9px] py-[7px] border border-os-orange rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-os-ink"
               >
                 <option value="Method 1 - % of Construction">Method 1 — % of Construction</option>
                 <option value="Method 2 - $/SF">Method 2 — $/SF</option>
@@ -264,7 +265,7 @@ export function FeeCalculationTab() {
                 min={0}
                 value={fc.customFee}
                 onChange={(e) => fc.onCustomFee(parseFloat(e.target.value) || 0)}
-                className="box-border w-full px-[9px] py-[7px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-right text-os-ink"
+                className={`box-border w-full px-[9px] py-[7px] border rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-right text-os-ink ${fc.feeSelect === "Custom" ? "border-os-orange" : "border-os-300"}`}
               />
             </div>
 
