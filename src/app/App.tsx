@@ -22,7 +22,7 @@ function Splash() {
         </div>
         <div className="flex flex-col items-start gap-[5px]">
           <div className="font-bold text-[34px] leading-none font-display tracking-[.02em] text-white">MAESTRO</div>
-          <div className="font-bold text-[10px] font-sans tracking-[.22em] uppercase text-os-orange">by Ossa Studio</div>
+          <div className="font-bold text-[10px] font-sans tracking-[.22em] uppercase text-os-orange-300">by Ossa Studio</div>
         </div>
       </div>
     </div>

@@ -92,7 +92,7 @@ export function Sidebar() {
           <img src="/assets/logo-symbol-white.png" alt="Maestro" className="w-7 h-auto flex-none" />
           <div>
             <div className="font-bold text-lg leading-none font-display tracking-[.02em] text-white">MAESTRO</div>
-            <div className="mt-1 font-bold text-[8.5px] tracking-[.2em] text-os-orange uppercase">by Ossa Studio</div>
+            <div className="mt-1 font-bold text-[8.5px] tracking-[.2em] text-os-orange-300 uppercase">by Ossa Studio</div>
           </div>
         </div>
 
@@ -125,7 +125,7 @@ export function Sidebar() {
           </button>
           <button
             onClick={onDelProject}
-            className="flex-1 py-[6px] border border-white/30 bg-transparent text-white/85 font-medium text-[10px] tracking-[.05em] cursor-pointer rounded-full hover:border-os-orange hover:text-os-orange"
+            className="flex-1 py-[6px] border border-white/30 bg-transparent text-white/85 font-medium text-[10px] tracking-[.05em] cursor-pointer rounded-full hover:border-os-orange-300 hover:text-os-orange-300"
           >
             DEL
           </button>

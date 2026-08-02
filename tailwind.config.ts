@@ -5,9 +5,13 @@ import type { Config } from "tailwindcss";
 // block. Source: "Ossa Fee Proposal App.dc.html" lines 1-104 and the bound
 // "Ossa Studio Design System" colors_and_type.css.
 //
-// TODO(fonts): original brand typeface is Helvetica Neue (licensed webfont,
-// not bundled here per migration decision). Using the brand's own documented
-// fallback (Arial) until licensing is confirmed for this deployment target.
+// Fonts: original brand typeface is Helvetica Neue, a licensed webfont not
+// bundled here. On-screen UI uses Arimo instead (self-hosted, see main.tsx)
+// -- Google's open-source, metrically-close substitute for Arial/Helvetica --
+// rather than either the brand's plain-Arial fallback or an unreliable
+// system-font reference. Print documents still lead with Arial in
+// --font-body-doc (src/index.css), matching the brand guide's own choice
+// for written pieces.
 export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
@@ -40,6 +44,12 @@ export default {
         "os-orange-600": "#d94e21",
         "os-orange-100": "#fdeae2",
         "os-orange-050": "#fef5f1",
+        // Lightened for use as TEXT on dark grounds (sidebar, splash) only --
+        // bright os-orange is ~2.96:1 on os-charcoal, below the 3:1 floor even
+        // for large text; this tint lands at ~5:1. Never use on light backgrounds,
+        // where os-orange-700 (darker, not lighter) is the accessible choice --
+        // see the Maestro design review, A11Y-01.
+        "os-orange-300": "#f4a589",
         // semantic tokens
         accent: "#EB5B28",
         "accent-hover": "#d94e21",
@@ -47,9 +57,14 @@ export default {
         "accent-wash": "#fdeae2",
       },
       fontFamily: {
-        // Helvetica Neue dropped (licensed) -- see file header TODO
-        display: ["Arial", "Helvetica", "sans-serif"],
-        sans: ["Arial", "Helvetica", "sans-serif"],
+        // Arimo, self-hosted via @fontsource (see main.tsx) -- Google's
+        // open-source, metrically-compatible substitute for Arial/Helvetica.
+        // Bundled with the app, so it renders identically for every visitor
+        // regardless of what's installed on their device, with no
+        // redistribution-licensing question the way embedding the actual
+        // Helvetica Neue files would raise.
+        display: ["Arimo", "Arial", "Helvetica", "sans-serif"],
+        sans: ["Arimo", "Arial", "Helvetica", "sans-serif"],
       },
       borderRadius: {
         "brand-sm": "10px",

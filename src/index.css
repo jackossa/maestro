@@ -11,8 +11,13 @@
   --fg3: #918f92; /* os-500 */
   --border: #e5e4e6; /* os-200 */
   --border-strong: #d2d1d3; /* os-300 */
-  --font-display: Arial, "Helvetica Neue", sans-serif;
-  --font-sans: Arial, "Helvetica Neue", sans-serif;
+  /* On-screen UI: self-hosted Arimo (see main.tsx), not a system-font
+     reference -- renders identically for every visitor. Print documents keep
+     Arial first in --font-body-doc below, matching the original brand
+     guide's own choice for written pieces (colors_and_type.css §07) --
+     not changed here. */
+  --font-display: "Arimo", Arial, "Helvetica Neue", sans-serif;
+  --font-sans: "Arimo", Arial, "Helvetica Neue", sans-serif;
   --font-body-doc: Arial, "Helvetica Neue", sans-serif;
 }
 
