@@ -93,8 +93,9 @@ export function FeeCalculationTab() {
       </div>
 
       <div className="overflow-x-auto mt-2">
-        <div className="grid gap-x-[6px] py-[6px] items-center min-w-[900px]" style={{ gridTemplateColumns: `190px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}>
+        <div className="grid gap-x-[6px] py-[6px] items-center min-w-[940px]" style={{ gridTemplateColumns: `130px 100px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}>
           <div className="font-medium text-[11.5px] text-os-600">Phase Duration (weeks)</div>
+          <div />
           <div />
           {fc.phaseWeekInputs.map((p) => (
             <input
@@ -110,10 +111,11 @@ export function FeeCalculationTab() {
           <div />
         </div>
         <div
-          className="grid gap-x-[6px] py-[9px] border-b-2 border-os-ink min-w-[900px]"
-          style={{ gridTemplateColumns: `190px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}
+          className="grid gap-x-[6px] py-[9px] border-b-2 border-os-ink min-w-[940px]"
+          style={{ gridTemplateColumns: `130px 100px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}
         >
           <div className="font-bold text-[10px] tracking-[.06em] uppercase text-os-600">Team Member</div>
+          <div className="font-bold text-[10px] tracking-[.06em] uppercase text-os-600">Role</div>
           <div className="font-bold text-[10px] tracking-[.06em] uppercase text-os-600 text-right">Rate</div>
           {fc.phaseAbbrevs.map((p) => (
             <div key={p.key} className="font-bold text-[9.5px] tracking-[.04em] uppercase text-os-600 text-center">
@@ -126,10 +128,11 @@ export function FeeCalculationTab() {
         {fc.teamRows.map((r, i) => (
           <div
             key={i}
-            className="grid gap-x-[6px] py-[5px] border-b border-os-200 items-center min-w-[900px]"
-            style={{ gridTemplateColumns: `190px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}
+            className="grid gap-x-[6px] py-[5px] border-b border-os-200 items-center min-w-[940px]"
+            style={{ gridTemplateColumns: `130px 100px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}
           >
-            <div className="font-medium text-[12.5px] text-os-ink overflow-hidden text-ellipsis whitespace-nowrap">{r.label}</div>
+            <div className="font-medium text-[12.5px] text-os-ink overflow-hidden text-ellipsis whitespace-nowrap">{r.name}</div>
+            <div className="font-light text-[12.5px] text-os-700 overflow-hidden text-ellipsis whitespace-nowrap">{r.role}</div>
             <div className="font-light text-[12.5px] text-os-700 text-right tabular-nums">{r.rateDisp}</div>
             {r.hrsInputs.map((h) => (
               <input
@@ -145,8 +148,9 @@ export function FeeCalculationTab() {
             <div className="font-medium text-[12.5px] text-os-ink text-right tabular-nums">{r.feeDisp}</div>
           </div>
         ))}
-        <div className="grid gap-x-[6px] pt-[10px] min-w-[900px]" style={{ gridTemplateColumns: `190px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}>
+        <div className="grid gap-x-[6px] pt-[10px] min-w-[940px]" style={{ gridTemplateColumns: `130px 100px 78px repeat(${fc.phaseCount}, 52px) 70px 92px` }}>
           <div className="font-bold text-[12.5px] text-os-ink">Phase Hours / TOTALS</div>
+          <div />
           <div />
           {fc.phaseHourTotals.map((p) => (
             <div key={p.key} className="font-bold text-xs text-os-ink text-center">

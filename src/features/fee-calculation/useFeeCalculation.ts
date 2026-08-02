@@ -45,7 +45,7 @@ export function useFeeCalculation() {
         });
       },
     }));
-    return { label: `${t.name}  —  ${t.role}`, rateDisp: moneyX(rates[i]), hrsInputs, totDisp: num(tot), feeDisp: money(fee) };
+    return { name: t.name, role: t.role, rateDisp: moneyX(rates[i]), hrsInputs, totDisp: num(tot), feeDisp: money(fee) };
   });
 
   const phaseWeekInputs = fc.activePhases.map((p) => ({
