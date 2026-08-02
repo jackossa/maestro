@@ -1,7 +1,10 @@
 import { SectionHeader } from "../../shared/components/SectionHeader";
 import { useSettings } from "./useSettings";
 
-const inputCls = "box-border w-full px-2 py-[6px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-os-ink";
+// base has no width class -- callers add w-full or a fixed w-[Npx] themselves,
+// so a fixed-width usage never loses a Tailwind class-order tiebreak to w-full
+const inputClsBase = "box-border px-2 py-[6px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-os-ink";
+const inputCls = `${inputClsBase} w-full`;
 const removeBtnCls =
   "px-[6px] py-[5px] border border-os-300 bg-white text-os-600 font-medium text-[10px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange";
 const addBtnCls =
@@ -18,13 +21,12 @@ export function SettingsTab() {
 
       <div className="flex items-center gap-3 my-[26px]">
         <span className="font-medium text-[13px] text-os-700">Target Net Profit</span>
-        <input type="number" min={0} max={90} value={s.setProfit} onChange={(e) => s.onSetProfit(parseFloat(e.target.value) || 0)} className={`w-[74px] ${inputCls} text-right`} />
+        <input type="number" min={0} max={90} value={s.setProfit} onChange={(e) => s.onSetProfit(parseFloat(e.target.value) || 0)} className={`${inputClsBase} w-[74px] text-right`} />
         <span className="font-medium text-[13px] text-os-600">%</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-9 max-md:grid-cols-1">
-        <div>
-          <SectionHeader>Team &amp; Billing Rates</SectionHeader>
+      <div>
+        <SectionHeader>Team &amp; Billing Rates</SectionHeader>
           <div className="overflow-x-auto">
             <div className="grid grid-cols-[1.2fr_1.2fr_120px_130px_80px] gap-x-3 py-[9px] border-b border-os-300 min-w-[640px]">
               <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600">Name</div>
@@ -144,9 +146,9 @@ export function SettingsTab() {
                   )}
                   {r.isPctCC && (
                     <div className="flex-none flex items-center gap-[5px] w-[170px]">
-                      <input type="number" min={0} step={0.01} value={r.pctCC} onChange={(e) => r.onPctCC(parseFloat(e.target.value) || 0)} className={`${inputCls} w-[60px] text-right`} />
+                      <input type="number" min={0} step={0.01} value={r.pctCC} onChange={(e) => r.onPctCC(parseFloat(e.target.value) || 0)} className={`${inputClsBase} w-[60px] text-right`} />
                       <span className="flex-none font-medium text-[11px] text-os-600">% CC, min $</span>
-                      <input type="number" min={0} step={100} value={r.minPrice} onChange={(e) => r.onMinPrice(parseFloat(e.target.value) || 0)} className={`${inputCls} w-[70px] text-right`} />
+                      <input type="number" min={0} step={100} value={r.minPrice} onChange={(e) => r.onMinPrice(parseFloat(e.target.value) || 0)} className={`${inputClsBase} w-[70px] text-right`} />
                     </div>
                   )}
                   {r.isFlat && (
@@ -220,6 +222,6 @@ export function SettingsTab() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
+
