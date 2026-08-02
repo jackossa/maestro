@@ -256,7 +256,8 @@ export function PipelineTab() {
                   value={r.chances}
                   onChange={(e) => r.onChancesChange(Number(e.target.value))}
                   disabled={r.chancesDisabled}
-                  className="box-border w-full px-1 py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-right text-os-ink"
+                  title={r.chancesDisabled ? "Locked at 100% -- deal is Won or Completed" : undefined}
+                  className="box-border w-full px-1 py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-right text-os-ink disabled:bg-os-100 disabled:border-os-200 disabled:text-os-500 disabled:cursor-not-allowed"
                 />
               </div>
               <div className="w-[8%] px-[10px] text-right font-bold text-xs text-os-ink">{r.expectedValueDisplay}</div>
