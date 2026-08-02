@@ -27,7 +27,7 @@ export function defaultData(): ProjectData {
       publicSector: "No",
       outcome: "New Lead",
       leadGenBy: "",
-      services: { sd: true, dd: true, cd: true, ca: true, ec: true, testfit: false, vr: false },
+      services: { sd: true, dd: true, cd: true, ca: true, ec: true, testfit: false, vr: false, hourlyCa: false },
       otherServicesChecked: {},
       address: "",
       city: "Charlotte",

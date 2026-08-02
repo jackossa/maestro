@@ -24,7 +24,7 @@ export interface ProjectInfo {
   publicSector: "Yes" | "No";
   outcome: string;
   leadGenBy: string;
-  services: { sd: boolean; dd: boolean; cd: boolean; ca: boolean; ec: boolean; testfit: boolean; vr: boolean };
+  services: { sd: boolean; dd: boolean; cd: boolean; ca: boolean; ec: boolean; testfit: boolean; vr: boolean; hourlyCa: boolean };
   otherServicesChecked: Record<string, boolean>;
   address: string;
   city: string;
