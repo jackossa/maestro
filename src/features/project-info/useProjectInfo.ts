@@ -2,7 +2,7 @@ import { useAppState } from "../../shared/state/store";
 import { computeAreaCalc } from "../../shared/lib/areaCalc";
 import { num } from "../../shared/lib/formatters";
 import { oppStatusColor } from "../../shared/lib/statusColor";
-import { STOP_COLOR } from "../../shared/lib/severityColors";
+import { STOP_COLOR, POSITIVE_COLOR, CAUTION_COLOR } from "../../shared/lib/severityColors";
 import { GO_Q, USE_TYPES } from "../../shared/lib/constants";
 
 // Business logic for Tab 1, ported from the relevant slices of
@@ -131,8 +131,9 @@ export function useProjectInfo() {
   });
   const goPct = goWT > 0 ? goET / (3 * goWT) : 0;
   const verdict = goPct >= 0.75 ? "GO" : goPct >= 0.6 ? "CAUTION" : "NO-GO";
-  // NO-GO uses STOP_COLOR, not brand orange -- see design review COLOR-01
-  const verdictColor = verdict === "GO" ? "#4C7E9C" : verdict === "CAUTION" ? "#F49633" : STOP_COLOR;
+  // Shares its palette with Fee Calculation's health status (POSITIVE/CAUTION/STOP)
+  // instead of steel/tangerine, which double as Pipeline stage colors -- design review COLOR-01
+  const verdictColor = verdict === "GO" ? POSITIVE_COLOR : verdict === "CAUTION" ? CAUTION_COLOR : STOP_COLOR;
 
   // ---- header status pill ----
   const projectStatusLabel = info.outcome || "New Lead";
