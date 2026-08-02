@@ -10,7 +10,7 @@ export function FeeCalculationTab() {
     <div>
       <PageHeader eyebrow="Ossa Studio · 2 of 7" title="Fee Calculation" subtitle={fc.projHeader} />
 
-      <SectionHeader note="— pick Fee % and $/SF per area; suggested columns are guidance only">Market Price</SectionHeader>
+      <SectionHeader>Market Price</SectionHeader>
       {fc.hasCalcRows ? (
         <>
           <div className="overflow-x-auto">
@@ -74,7 +74,7 @@ export function FeeCalculationTab() {
       )}
 
       <div className="mt-[34px] flex items-center justify-between gap-4 flex-wrap">
-        <SectionHeader note="— rate × hours/week per phase × weeks. Public-only phases and Bidding activate from tab 1 flags.">Hourly Workplan</SectionHeader>
+        <SectionHeader>Hourly Workplan</SectionHeader>
       </div>
       <div className="flex gap-2 justify-end mt-2">
         {fc.hasSfSuggestion && (
@@ -160,7 +160,7 @@ export function FeeCalculationTab() {
 
       <div className="grid grid-cols-[1fr_320px] gap-9 items-start mt-[34px] max-md:grid-cols-1">
         <div>
-          <SectionHeader note="— typical vs. actual">Engineering &amp; Expenses</SectionHeader>
+          <SectionHeader>Engineering &amp; Expenses</SectionHeader>
           <div className="overflow-x-auto">
             <div className="grid grid-cols-[1fr_76px_96px_110px_80px_80px] gap-x-2 py-2 border-b border-os-300 min-w-[520px]">
               <div />
