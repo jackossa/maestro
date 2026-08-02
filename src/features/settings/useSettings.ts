@@ -1,6 +1,7 @@
 import { useAppState } from "../../shared/state/store";
 import { pct, pctDisp } from "../../shared/lib/formatters";
 import { PHASES } from "../../shared/lib/constants";
+import { STOP_COLOR } from "../../shared/lib/severityColors";
 
 // Ported verbatim from the "Settings rows" block of Component.renderVals()
 // (Ossa Fee Proposal App.dc.html lines 2323-2381).
@@ -33,7 +34,7 @@ export function useSettings() {
   const participationSum = S.team.reduce((a, t) => a + (+t.participation || 0), 0);
   const participationSumWarn = Math.abs(participationSum - 1) > 0.005;
   const participationSumLabel = pct(participationSum, 0);
-  const participationSumColor = participationSumWarn ? "#EB5B28" : "#918f92";
+  const participationSumColor = participationSumWarn ? STOP_COLOR : "#918f92";
 
   const benchRows = S.bench.map((b, i) => ({
     type: b.type,
@@ -117,8 +118,8 @@ export function useSettings() {
   const phPubSum = feeablePhases.reduce((a, p) => a + S.phase[p.k].public, 0);
   const phPrivLabel = pct(phPrivSum, 0);
   const phPubLabel = pct(phPubSum, 0);
-  const phPrivColor = Math.abs(phPrivSum - 1) > 0.005 ? "#EB5B28" : "#1d1d1e";
-  const phPubColor = Math.abs(phPubSum - 1) > 0.005 ? "#EB5B28" : "#1d1d1e";
+  const phPrivColor = Math.abs(phPrivSum - 1) > 0.005 ? STOP_COLOR : "#1d1d1e";
+  const phPubColor = Math.abs(phPubSum - 1) > 0.005 ? STOP_COLOR : "#1d1d1e";
 
   return {
     setProfit: pctDisp(S.profit),

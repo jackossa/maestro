@@ -157,7 +157,7 @@ export function ProjectInfoTab() {
                 <button
                   onClick={r.onRemove}
                   title="Remove"
-                  className="w-full py-[7px] border border-os-300 bg-white text-os-600 font-bold text-[13px] cursor-pointer rounded-full leading-none hover:border-os-orange hover:text-os-orange"
+                  className="w-full py-[7px] border border-os-300 bg-white text-os-600 font-bold text-[13px] cursor-pointer rounded-full leading-none hover:border-os-orange hover:text-os-orange-700"
                 >
                   ×
                 </button>
@@ -165,14 +165,14 @@ export function ProjectInfoTab() {
             ))}
             <button
               onClick={onAddArea}
-              className="mt-[10px] px-[14px] py-[7px] border border-os-orange bg-white text-os-orange font-bold text-[11px] tracking-[.08em] cursor-pointer rounded-full whitespace-nowrap hover:bg-os-orange hover:text-white"
+              className="mt-[10px] px-[14px] py-[7px] border border-os-orange bg-white text-os-orange-700 font-bold text-[11px] tracking-[.08em] cursor-pointer rounded-full whitespace-nowrap hover:bg-os-orange hover:text-white"
             >
               + ADD AREA
             </button>
             <div className="grid grid-cols-[1fr_152px_70px_34px] gap-x-2 pt-3 min-w-[420px]">
               <div className="font-bold text-[13px] text-os-ink">TOTAL</div>
               <div />
-              <div className="font-bold text-sm text-os-orange text-right">{totalSF}</div>
+              <div className="font-bold text-sm text-os-orange-700 text-right">{totalSF}</div>
               <div />
             </div>
           </div>

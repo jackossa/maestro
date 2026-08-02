@@ -3,6 +3,7 @@ import { PHASES } from "./constants";
 import { getPhaseGates } from "./phases";
 import { computeAreaCalc } from "./areaCalc";
 import { money, moneyX, moneySF, num, pct } from "./formatters";
+import { STOP_COLOR } from "./severityColors";
 
 // Ported verbatim from Component.renderVals() "Hourly Workplan" and
 // "Engineering & Expenses" / "Verdict" sections (Ossa Fee Proposal App.dc.html
@@ -87,9 +88,10 @@ export function computeFeeCalc(data: ProjectData): FeeCalcResult {
   const coordLiability = consBilled * 0.15;
   const totalFee = archFee + consBilled + reimbBilled + otherServicesFee + coordLiability;
 
+  // RED uses STOP_COLOR, not brand orange -- see design review COLOR-01
   const status =
     floorV > totalFee
-      ? { t: "RED — Total fee is below your break-even floor", c: "#EB5B28" }
+      ? { t: "RED — Total fee is below your break-even floor", c: STOP_COLOR }
       : totalFee < laborTotal + consBilled + reimbBilled
         ? { t: "YELLOW — Architecture below workplan labor: thinner margin", c: "#F8B74B" }
         : { t: "GREEN — Total fee covers the workplan with target profit", c: "#74C4CA" };

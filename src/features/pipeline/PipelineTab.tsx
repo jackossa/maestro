@@ -1,4 +1,5 @@
 import { usePipeline } from "./usePipeline";
+import { STOP_COLOR } from "../../shared/lib/severityColors";
 
 const cardCls = "border border-os-200 bg-white rounded-brand-lg overflow-hidden shadow-sm px-[18px] py-4";
 const inputCls = "box-border px-[10px] py-[7px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[12.5px] text-os-ink";
@@ -9,7 +10,7 @@ export function PipelineTab() {
 
   return (
     <div>
-      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange">Ossa Studio · 6 of 7</div>
+      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 6 of 7</div>
       <h1 className="mt-[6px] mb-1 font-bold text-[30px] leading-[1.1] font-display tracking-[-.01em] text-os-ink">Pipeline</h1>
       <p className="m-0 mb-[26px] font-light text-[13.5px] text-os-600">Trends and advice drawn from every project saved in this browser.</p>
 
@@ -43,7 +44,7 @@ export function PipelineTab() {
           { label: "Active", value: p.outcomeOpen, color: "#918f92" },
           { label: "Won", value: p.outcomeWon, color: "#4C7E9C" },
           { label: "Completed", value: p.outcomeCompleted, color: "#57575a" },
-          { label: "Lost", value: p.outcomeLost, color: "#EB5B28" },
+          { label: "Lost", value: p.outcomeLost, color: STOP_COLOR },
           { label: "Cancelled", value: p.outcomeCancelled, color: "#6f6f73" },
         ].map((k) => (
           <div key={k.label} className={`${cardCls} text-center py-[14px]`}>
@@ -77,7 +78,7 @@ export function PipelineTab() {
               </option>
             ))}
           </select>
-          <button onClick={p.onOppToggleSettings} className="px-4 py-2 border border-os-300 bg-white text-os-700 font-bold text-[11px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange">
+          <button onClick={p.onOppToggleSettings} className="px-4 py-2 border border-os-300 bg-white text-os-700 font-bold text-[11px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange-700">
             TARGET
           </button>
           <button onClick={p.onOppAddProject} className="px-[18px] py-2 border border-os-orange bg-os-orange text-white font-bold text-[11px] tracking-[.06em] rounded-full hover:bg-accent-hover">
@@ -261,11 +262,11 @@ export function PipelineTab() {
               <div className="w-[8%] px-[10px] text-right font-bold text-xs text-os-ink">{r.expectedValueDisplay}</div>
               <div className="w-[12%] px-[10px] flex gap-[5px] justify-end">
                 {r.hasProject && (
-                  <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange">
+                  <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
                     OPEN
                   </button>
                 )}
-                <button onClick={r.onRemove} title="Remove" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange">
+                <button onClick={r.onRemove} title="Remove" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
                   ×
                 </button>
               </div>

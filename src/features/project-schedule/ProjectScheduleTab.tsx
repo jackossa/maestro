@@ -8,7 +8,7 @@ export function ProjectScheduleTab() {
   return (
     <div>
       <div className="no-print flex items-center justify-between gap-4">
-        <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange">Ossa Studio · 3 of 7</div>
+        <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 3 of 7</div>
         <button
           onClick={s.onPrintSchedule}
           className="px-5 py-[9px] border border-os-orange bg-os-orange text-white font-bold text-[11.5px] tracking-[.06em] rounded-full hover:bg-accent-hover"
@@ -79,7 +79,7 @@ export function ProjectScheduleTab() {
               <button
                 onClick={() => s.onResetStart(r.k)}
                 title="Reset to auto-sequenced date"
-                className="flex-none w-[18px] h-[18px] p-0 border border-os-300 bg-white text-os-600 font-bold text-[11px] rounded-[3px] hover:border-os-orange hover:text-os-orange"
+                className="flex-none w-[18px] h-[18px] p-0 border border-os-300 bg-white text-os-600 font-bold text-[11px] rounded-[3px] hover:border-os-orange hover:text-os-orange-700"
               >
                 ×
               </button>
@@ -99,7 +99,7 @@ export function ProjectScheduleTab() {
         <div className="font-bold text-[13px] text-os-ink text-center">{s.schedTotalWeeks}</div>
         <div className="font-bold text-[13px] text-os-ink text-center">{s.schedTotalDays}</div>
         <div />
-        <div className="font-bold text-[13px] text-os-orange">{s.completion}</div>
+        <div className="font-bold text-[13px] text-os-orange-700">{s.completion}</div>
         <div />
       </div>
 

@@ -6,9 +6,9 @@ import { useSettings } from "./useSettings";
 const inputClsBase = "box-border px-2 py-[6px] border border-os-300 rounded-brand-sm bg-[#fdf4e3] font-medium text-[13px] text-os-ink";
 const inputCls = `${inputClsBase} w-full`;
 const removeBtnCls =
-  "px-[6px] py-[5px] border border-os-300 bg-white text-os-600 font-medium text-[10px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange";
+  "px-[6px] py-[5px] border border-os-300 bg-white text-os-600 font-medium text-[10px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange-700";
 const addBtnCls =
-  "mt-[10px] px-[14px] py-[7px] border border-os-orange bg-white text-os-orange font-bold text-[11px] tracking-[.08em] rounded-full hover:bg-os-orange hover:text-white";
+  "mt-[10px] px-[14px] py-[7px] border border-os-orange bg-white text-os-orange-700 font-bold text-[11px] tracking-[.08em] rounded-full hover:bg-os-orange hover:text-white";
 
 // Ported from Ossa Fee Proposal App.dc.html lines 659-822 (Tab 5 markup).
 export function SettingsTab() {
@@ -16,7 +16,7 @@ export function SettingsTab() {
 
   return (
     <div>
-      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange">Ossa Studio · 5 of 7</div>
+      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 5 of 7</div>
       <h1 className="mt-[6px] mb-1 font-bold text-[30px] leading-[1.1] font-display tracking-[-.01em] text-os-ink">Settings — Firm Defaults</h1>
 
       <div className="flex items-center gap-3 my-[26px]">

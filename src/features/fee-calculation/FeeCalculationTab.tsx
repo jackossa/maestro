@@ -54,9 +54,9 @@ export function FeeCalculationTab() {
               <div className="font-bold text-[13px] text-os-ink text-right">{fc.ccTotal}</div>
               <div />
               <div />
-              <div className="font-bold text-[13px] text-os-orange text-right">{fc.m1Total}</div>
+              <div className="font-bold text-[13px] text-os-orange-700 text-right">{fc.m1Total}</div>
               <div />
-              <div className="font-bold text-[13px] text-os-orange text-right">{fc.m2Total}</div>
+              <div className="font-bold text-[13px] text-os-orange-700 text-right">{fc.m2Total}</div>
             </div>
           </div>
           {fc.grossInfo.show && (
@@ -78,16 +78,16 @@ export function FeeCalculationTab() {
       </div>
       <div className="flex gap-2 justify-end mt-2">
         {fc.hasSfSuggestion && (
-          <button onClick={fc.onFillFromSF} className="px-[14px] py-[6px] border border-os-orange bg-white text-os-orange font-bold text-[10.5px] tracking-[.06em] rounded-full hover:bg-os-orange hover:text-white">
+          <button onClick={fc.onFillFromSF} className="px-[14px] py-[6px] border border-os-orange bg-white text-os-orange-700 font-bold text-[10.5px] tracking-[.06em] rounded-full hover:bg-os-orange hover:text-white">
             Fill Hours per SF
           </button>
         )}
         {fc.hasPctSuggestion && (
-          <button onClick={fc.onFillFromPct} className="px-[14px] py-[6px] border border-os-orange bg-white text-os-orange font-bold text-[10.5px] tracking-[.06em] rounded-full hover:bg-os-orange hover:text-white">
+          <button onClick={fc.onFillFromPct} className="px-[14px] py-[6px] border border-os-orange bg-white text-os-orange-700 font-bold text-[10.5px] tracking-[.06em] rounded-full hover:bg-os-orange hover:text-white">
             Fill Hours per %
           </button>
         )}
-        <button onClick={fc.onResetHours} className="px-[14px] py-[6px] border border-os-300 bg-white text-os-600 font-bold text-[10.5px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange">
+        <button onClick={fc.onResetHours} className="px-[14px] py-[6px] border border-os-300 bg-white text-os-600 font-bold text-[10.5px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange-700">
           Reset Hours to 0
         </button>
       </div>
@@ -154,7 +154,7 @@ export function FeeCalculationTab() {
             </div>
           ))}
           <div className="font-bold text-[12.5px] text-os-ink text-right">{fc.hoursTotal}</div>
-          <div className="font-bold text-[12.5px] text-os-orange text-right">{fc.laborTotal}</div>
+          <div className="font-bold text-[12.5px] text-os-orange-700 text-right">{fc.laborTotal}</div>
         </div>
       </div>
 

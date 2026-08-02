@@ -9,7 +9,7 @@ export function ProposalBuilderTab() {
   return (
     <div>
       <div className="no-print flex items-center justify-between gap-4">
-        <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange">Ossa Studio · 7 of 7</div>
+        <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 7 of 7</div>
         <button onClick={p.onCreatePdf} className="px-5 py-[9px] border border-os-orange bg-os-orange text-white font-bold text-[11.5px] tracking-[.06em] rounded-full hover:bg-accent-hover">
           PDF
         </button>
@@ -45,7 +45,7 @@ export function ProposalBuilderTab() {
             <div key={r.key} className="border-b border-os-200">
               <div className="grid grid-cols-[16px_1fr_130px_90px] gap-x-[10px] py-[6px] items-center">
                 {r.hasDesc ? (
-                  <button onClick={r.onToggleDesc} title="Show description" className="w-4 h-4 p-0 border border-os-300 bg-white text-os-600 font-bold text-[9px] rounded-[3px] flex items-center justify-center hover:border-os-orange hover:text-os-orange">
+                  <button onClick={r.onToggleDesc} title="Show description" className="w-4 h-4 p-0 border border-os-300 bg-white text-os-600 font-bold text-[9px] rounded-[3px] flex items-center justify-center hover:border-os-orange hover:text-os-orange-700">
                     {r.toggleGlyph}
                   </button>
                 ) : (
@@ -78,7 +78,7 @@ export function ProposalBuilderTab() {
                 <div key={r.key} className="border-b border-os-200">
                   <div className="grid grid-cols-[16px_1fr_130px_90px] gap-x-[10px] py-[6px] items-center">
                     {r.hasDesc ? (
-                      <button onClick={r.onToggleDesc} title="Show description" className="w-4 h-4 p-0 border border-os-300 bg-white text-os-600 font-bold text-[9px] rounded-[3px] flex items-center justify-center hover:border-os-orange hover:text-os-orange">
+                      <button onClick={r.onToggleDesc} title="Show description" className="w-4 h-4 p-0 border border-os-300 bg-white text-os-600 font-bold text-[9px] rounded-[3px] flex items-center justify-center hover:border-os-orange hover:text-os-orange-700">
                         {r.toggleGlyph}
                       </button>
                     ) : (
@@ -178,7 +178,7 @@ export function ProposalBuilderTab() {
               <span>{r.amt}</span>
             </div>
           ))}
-          <div className="flex justify-between pt-[10px] font-bold text-sm text-os-orange">
+          <div className="flex justify-between pt-[10px] font-bold text-sm text-os-orange-700">
             <span>Total</span>
             <span>{p.invoiceTotal}</span>
           </div>
