@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppState } from "../shared/state/store";
 import type { ProjectTab } from "../shared/state/store";
+import { ProfileMenu } from "./ProfileMenu";
 
 // Sidebar content depends on where you are: on Pipeline, no project tabs
 // show; inside a project, a "← Pipeline" breadcrumb replaces the old
@@ -120,6 +121,7 @@ export function Sidebar() {
       </div>
 
       <div className="border-t border-white/[.12]">
+        <ProfileMenu />
         <button
           onClick={goToSettings}
           className={`flex items-center gap-[11px] w-[calc(100%-20px)] mx-[10px] mt-[10px] text-left px-[14px] py-[9px] border-0 rounded-full cursor-pointer font-medium text-[13px] ${
