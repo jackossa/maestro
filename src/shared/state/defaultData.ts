@@ -25,7 +25,6 @@ export function defaultData(): ProjectData {
       projectManual: "No",
       bidding: "No",
       publicSector: "No",
-      outcome: "New Lead",
       leadGenBy: "",
       services: { sd: true, dd: true, cd: true, ca: true, ec: true, testfit: false, vr: false, hourlyCa: false },
       otherServicesChecked: {},
@@ -113,6 +112,18 @@ export function defaultData(): ProjectData {
       ],
       leadSources: ["Jack", "Andrew", "Renato", "Mary Anna Ossa", "Website Form", "Referral From"],
       downPayment: 0.1,
+    },
+    pipeline: {
+      status: "New Lead",
+      potentialFee: 0,
+      invoiced: 0,
+      remaining: 0,
+      chances: 25,
+      date: isoDate(now),
+      fallbackYear: String(now.getFullYear()),
+      lostReason: "",
+      yearSplits: [],
+      projectNumber: "",
     },
   };
 }

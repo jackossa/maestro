@@ -15,6 +15,19 @@ export interface GoRow {
   weight: number;
 }
 
+export interface PipelineData {
+  status: string;
+  potentialFee: number;
+  invoiced: number;
+  remaining: number;
+  chances: number;
+  date: string;
+  fallbackYear: string;
+  lostReason: string;
+  yearSplits: { year: string; invoiced: number }[];
+  projectNumber: string;
+}
+
 export interface ProjectInfo {
   name: string;
   client: string;
@@ -22,7 +35,6 @@ export interface ProjectInfo {
   projectManual: "Yes" | "No";
   bidding: "Yes" | "No";
   publicSector: "Yes" | "No";
-  outcome: string;
   leadGenBy: string;
   services: { sd: boolean; dd: boolean; cd: boolean; ca: boolean; ec: boolean; testfit: boolean; vr: boolean; hourlyCa: boolean };
   otherServicesChecked: Record<string, boolean>;
@@ -122,6 +134,7 @@ export interface ProjectData {
   packages: { A: PackageDef; B: PackageDef; C: PackageDef };
   proposal: ProposalData;
   settings: Settings;
+  pipeline: PipelineData;
 }
 
 export interface ProjectRecord {
@@ -136,4 +149,5 @@ export interface Store {
   projects: Record<string, ProjectRecord>;
   leads: Record<string, unknown>;
   leadOrder: string[];
+  pipelineSettings: { year: string; pendingTarget: number };
 }
