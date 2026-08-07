@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { defaultData } from "../../shared/state/defaultData";
+import { defaultData, isoDate } from "../../shared/state/defaultData";
 import { duplicateProjectData } from "./duplicateProject";
 
 describe("duplicateProjectData", () => {
@@ -58,6 +58,6 @@ describe("duplicateProjectData", () => {
     expect(result.pipeline.chances).toBe(25);
     expect(result.pipeline.potentialFee).toBe(0);
     expect(result.pipeline.projectNumber).toBe("26-07");
-    expect(result.pipeline.date).toBe(new Date().toISOString().slice(0, 10));
+    expect(result.pipeline.date).toBe(isoDate(new Date()));
   });
 });
