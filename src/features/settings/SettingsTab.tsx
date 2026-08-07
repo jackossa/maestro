@@ -20,10 +20,19 @@ export function SettingsTab() {
       <h1 className="mt-[6px] mb-1 font-bold text-[30px] leading-[1.1] font-display tracking-[-.01em] text-os-ink">Settings — {s.projectName}</h1>
       <p className="m-0 mb-[26px] font-light text-[13.5px] text-os-600">These settings apply only to this project, not firm-wide.</p>
 
-      <div className="flex items-center gap-3 my-[26px]">
+      <div className="flex items-center gap-3 my-[26px] flex-wrap">
         <span className="font-medium text-[13px] text-os-700">Target Net Profit</span>
         <input type="number" min={0} max={90} value={s.setProfit} onChange={(e) => s.onSetProfit(parseFloat(e.target.value) || 0)} className={`${inputClsBase} w-[74px] text-right`} />
         <span className="font-medium text-[13px] text-os-600">%</span>
+
+        <span className="font-medium text-[13px] text-os-700 ml-4">Pending-Approval Target</span>
+        <input
+          value={s.pipelineTargetDisplay}
+          onFocus={s.onPipelineTargetFocus}
+          onBlur={s.onPipelineTargetBlur}
+          onChange={(e) => s.onPipelineTargetChange(e.target.value)}
+          className={`${inputClsBase} w-[120px] text-right`}
+        />
       </div>
 
       <div>

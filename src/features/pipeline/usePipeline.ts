@@ -44,7 +44,6 @@ export function usePipeline() {
     addProjectSplit,
     removeProjectSplit,
     updateProjectSplit,
-    setPendingTarget,
     setPipelineYear,
   } = useAppState();
   const { store } = state;
@@ -55,7 +54,6 @@ export function usePipeline() {
   const [sortDir, setSortDir] = useState(1);
   const [activeField, setActiveField] = useState<string | null>(null);
   const [view, setView] = useState<"list" | "board">("list");
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [splitOpenId, setSplitOpenId] = useState<string | null>(null);
 
   const allRows: PipelineRow[] = store.order.map((id) => ({
@@ -197,7 +195,7 @@ export function usePipeline() {
     });
   }
 
-  const moneyDisplay = (p: PipelineRow, field: "potentialFee" | "invoiced" | "remaining") =>
+  const moneyDisplay = (p: PipelineRow, field: "potentialFee" | "invoiced") =>
     activeField === p.id + "::" + field ? String(p[field] ?? 0) : oppFmtMoney(p[field] as number);
 
   const oppRows = oppFiltered.map((p) => ({
@@ -210,7 +208,7 @@ export function usePipeline() {
     projectNumber: p.projectNumber || "",
     potentialFeeDisplay: moneyDisplay(p, "potentialFee"),
     invoicedDisplay: moneyDisplay(p, "invoiced"),
-    remainingDisplay: moneyDisplay(p, "remaining"),
+    remainingDisplay: oppFmtMoney((Number(p.potentialFee) || 0) - (Number(p.invoiced) || 0)),
     expectedValueDisplay: oppFmtMoney(oppComputedExpected(p)),
     chances: p.chances,
     chancesDisabled: p.status === "Won / In Process" || p.status === "Completed",
@@ -237,11 +235,9 @@ export function usePipeline() {
     onAddSplit: () => addProjectSplit(p.id),
     onPotentialFeeFocus: () => setActiveField(p.id + "::potentialFee"),
     onInvoicedFocus: () => setActiveField(p.id + "::invoiced"),
-    onRemainingFocus: () => setActiveField(p.id + "::remaining"),
     onFieldBlur: () => setActiveField(null),
     onPotentialFeeChange: (v: string) => updateProjectPipeline(p.id, "potentialFee", oppParseMoney(v)),
     onInvoicedChange: (v: string) => updateProjectPipeline(p.id, "invoiced", oppParseMoney(v)),
-    onRemainingChange: (v: string) => updateProjectPipeline(p.id, "remaining", oppParseMoney(v)),
     onChancesChange: (v: number) => updateProjectPipeline(p.id, "chances", v),
     onOpenProject: () => openProject(p.id, 1),
     onDuplicate: () => duplicateProject(p.id),
@@ -305,12 +301,6 @@ export function usePipeline() {
     oppYearOptions,
     onOppYearChange: (v: string) => setPipelineYear(v),
     onOppAddProject: addProject,
-    onOppToggleSettings: () => setSettingsOpen((v) => !v),
-    oppSettingsOpen: settingsOpen,
-    oppPendingTargetDisplay: activeField === "__target__" ? String(oppTarget) : oppFmtMoney(oppTarget),
-    onOppTargetFocus: () => setActiveField("__target__"),
-    onOppTargetBlur: () => setActiveField(null),
-    onOppTargetChange: (v: string) => setPendingTarget(oppParseMoney(v)),
     oppProgressPct,
     oppProgressCaption: oppFmtMoney(oppPendingTotal) + " of " + oppFmtMoney(oppTarget) + " target",
     oppKpis,

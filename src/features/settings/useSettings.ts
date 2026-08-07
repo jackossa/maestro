@@ -1,17 +1,30 @@
+import { useState } from "react";
 import { useAppState } from "../../shared/state/store";
 import { pct, pctDisp } from "../../shared/lib/formatters";
 import { PHASES } from "../../shared/lib/constants";
 import { STOP_COLOR } from "../../shared/lib/severityColors";
+import { oppFmtMoney, oppParseMoney } from "../../shared/lib/oppHelpers";
 
 // Ported verbatim from the "Settings rows" block of Component.renderVals()
 // (Ossa Fee Proposal App.dc.html lines 2323-2381).
 export function useSettings() {
-  const { currentProject, upd } = useAppState();
+  const { currentProject, upd, state, setPendingTarget } = useAppState();
   // currentProject is typed as possibly undefined because it genuinely can be
   // (zero-projects state), but this hook only mounts inside SettingsTab,
   // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
   const S = currentProject!.data.settings;
   const projectName = currentProject!.data.info.name || "Untitled Project";
+
+  // Pending-approval target is firm-wide (store.pipelineSettings), not
+  // per-project like everything else on this page -- it lives here because
+  // Settings is where configuration values live, not because it belongs to
+  // this project. See the Pipeline design note on this relocation.
+  const [targetFocused, setTargetFocused] = useState(false);
+  const pendingTarget = state.store.pipelineSettings.pendingTarget || 500000;
+  const pipelineTargetDisplay = targetFocused ? String(pendingTarget) : oppFmtMoney(pendingTarget);
+  const onPipelineTargetFocus = () => setTargetFocused(true);
+  const onPipelineTargetBlur = () => setTargetFocused(false);
+  const onPipelineTargetChange = (v: string) => setPendingTarget(oppParseMoney(v));
 
   const teamSetRows = S.team.map((t, i) => ({
     name: t.name,
@@ -128,6 +141,10 @@ export function useSettings() {
   return {
     projectName,
     setProfit: pctDisp(S.profit),
+    pipelineTargetDisplay,
+    onPipelineTargetFocus,
+    onPipelineTargetBlur,
+    onPipelineTargetChange,
     onSetProfit: (v: number) => upd((d) => { d.settings.profit = Math.max(0, v) / 100; }),
     teamSetRows,
     onAddTeam,
