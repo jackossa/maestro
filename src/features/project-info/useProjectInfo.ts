@@ -14,8 +14,12 @@ import { GO_Q, USE_TYPES } from "../../shared/lib/constants";
 
 export function useProjectInfo() {
   const { currentProject, upd } = useAppState();
-  const info = currentProject.data.info;
-  const settings = currentProject.data.settings;
+  // currentProject is typed as possibly undefined because it genuinely can be
+  // (zero-projects state), but this hook only mounts inside ProjectInfoTab,
+  // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
+  const info = currentProject!.data.info;
+  const settings = currentProject!.data.settings;
+  const pipeline = currentProject!.data.pipeline;
 
   const { sfT } = computeAreaCalc(info, settings);
   const totalSF = num(sfT) + " SF";
@@ -136,7 +140,7 @@ export function useProjectInfo() {
   const verdictColor = verdict === "GO" ? POSITIVE_COLOR : verdict === "CAUTION" ? CAUTION_COLOR : STOP_COLOR;
 
   // ---- header status pill ----
-  const projectStatusLabel = info.outcome || "New Lead";
+  const projectStatusLabel = pipeline.status || "New Lead";
   const projectStatusPillColor = oppStatusColor(projectStatusLabel);
 
   return {

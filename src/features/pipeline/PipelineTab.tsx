@@ -10,7 +10,7 @@ export function PipelineTab() {
 
   return (
     <div>
-      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 6 of 7</div>
+      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio</div>
       <h1 className="mt-[6px] mb-1 font-bold text-[30px] leading-[1.1] font-display tracking-[-.01em] text-os-ink">Pipeline</h1>
       <p className="m-0 mb-[26px] font-light text-[13.5px] text-os-600">Trends and advice drawn from every project saved in this browser.</p>
 
@@ -262,11 +262,12 @@ export function PipelineTab() {
               </div>
               <div className="w-[8%] px-[10px] text-right font-bold text-xs text-os-ink">{r.expectedValueDisplay}</div>
               <div className="w-[12%] px-[10px] flex gap-[5px] justify-end">
-                {r.hasProject && (
-                  <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
-                    OPEN
-                  </button>
-                )}
+                <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
+                  OPEN
+                </button>
+                <button onClick={r.onDuplicate} title="Start a new project from this one's setup" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
+                  DUPLICATE
+                </button>
                 <button onClick={r.onRemove} title="Remove" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
                   ×
                 </button>
@@ -274,7 +275,9 @@ export function PipelineTab() {
             </div>
           ))}
           {p.oppNoResults && (
-            <p className="my-5 font-light text-[13.5px] text-os-500 text-center border border-dashed border-os-300 p-5 rounded-brand-sm">No opportunities match this filter.</p>
+            <p className="my-5 font-light text-[13.5px] text-os-500 text-center border border-dashed border-os-300 p-5 rounded-brand-sm">
+              {p.hasNoProjectsAtAll ? "No projects yet — click + Add Opportunity to create your first one." : "No opportunities match this filter."}
+            </p>
           )}
           <p className="mt-[10px] mb-0 font-light text-xs text-os-500">{p.oppResultsCaption}</p>
         </div>
@@ -298,6 +301,13 @@ export function PipelineTab() {
                     <span>{card.fee}</span>
                     <span className="text-os-500 font-medium">{card.chances}%</span>
                   </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); card.onDuplicate(); }}
+                    title="Start a new project from this one's setup"
+                    className="mt-[6px] w-full px-2 py-1 border border-os-300 bg-white text-os-600 font-bold text-[9px] tracking-[.05em] rounded-full hover:border-os-orange hover:text-os-orange-700"
+                  >
+                    DUPLICATE
+                  </button>
                   {card.isLost && (
                     <input
                       value={card.lostReason}

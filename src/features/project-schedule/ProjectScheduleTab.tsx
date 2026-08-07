@@ -8,7 +8,7 @@ export function ProjectScheduleTab() {
   return (
     <div>
       <div className="no-print flex items-center justify-between gap-4">
-        <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 3 of 7</div>
+        <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio</div>
         <button
           onClick={s.onPrintSchedule}
           className="px-5 py-[9px] border border-os-orange bg-os-orange text-white font-bold text-[11.5px] tracking-[.06em] rounded-full hover:bg-accent-hover"

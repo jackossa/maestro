@@ -8,7 +8,7 @@ export function FeeCalculationTab() {
 
   return (
     <div>
-      <PageHeader eyebrow="Ossa Studio · 2 of 7" title="Fee Calculation" subtitle={fc.projHeader} />
+      <PageHeader eyebrow="Ossa Studio" title="Fee Calculation" subtitle={fc.projHeader} />
 
       <SectionHeader>Market Price</SectionHeader>
       {fc.hasCalcRows ? (

@@ -26,7 +26,7 @@ export function ProjectInfoTab() {
   return (
     <div>
       <PageHeader
-        eyebrow="Ossa Studio · 1 of 7"
+        eyebrow="Ossa Studio"
         title="Project Information"
         statusPill={{ label: projectStatusLabel, color: projectStatusPillColor }}
       />

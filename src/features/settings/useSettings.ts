@@ -7,7 +7,11 @@ import { STOP_COLOR } from "../../shared/lib/severityColors";
 // (Ossa Fee Proposal App.dc.html lines 2323-2381).
 export function useSettings() {
   const { currentProject, upd } = useAppState();
-  const S = currentProject.data.settings;
+  // currentProject is typed as possibly undefined because it genuinely can be
+  // (zero-projects state), but this hook only mounts inside SettingsTab,
+  // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
+  const S = currentProject!.data.settings;
+  const projectName = currentProject!.data.info.name || "Untitled Project";
 
   const teamSetRows = S.team.map((t, i) => ({
     name: t.name,
@@ -122,6 +126,7 @@ export function useSettings() {
   const phPubColor = Math.abs(phPubSum - 1) > 0.005 ? STOP_COLOR : "#1d1d1e";
 
   return {
+    projectName,
     setProfit: pctDisp(S.profit),
     onSetProfit: (v: number) => upd((d) => { d.settings.profit = Math.max(0, v) / 100; }),
     teamSetRows,

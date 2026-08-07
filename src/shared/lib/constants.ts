@@ -74,31 +74,6 @@ export const BENCH: [string, number, number, number][] = [
   ["Restrooms", 350, 12, 42], ["Kitchen", 400, 10, 40], ["Lobby Renovation", 250, 10, 25],
 ];
 
-export interface OppProject {
-  _id: string;
-  client: string;
-  project: string;
-  status: string;
-  potentialFee: number;
-  invoiced: number;
-  remaining: number;
-  chances: number;
-  date: string;
-  lostReason: string;
-  yearSplits: { year: string; invoiced: number }[];
-  projectNumber: string;
-  fallbackYear: string;
-  projectId?: string;
-}
-
-export const OPP_SEED: OppProject[] = [
-  {
-    client: "Sample Client", project: "Sample Project", status: "New Lead",
-    potentialFee: 1, invoiced: 0, remaining: 1, chances: 1, date: "2026-07-26",
-    lostReason: "", yearSplits: [], projectNumber: "1", _id: "sample-1", fallbackYear: "2026",
-  },
-];
-
 export const FRAMEWORKS = [
   { title: "Standard / Private", body: "Programming > SD > DD > CD & Permit > (Permitting) > CA. Scope per Ossa LOA: zoning analysis, pricing drawings, engineering coordination, permit submission, biweekly site visits, submittal & RFI review, closeout." },
   { title: "Government — Mecklenburg County (example)", body: "SD > DD > CD (county review) > Bidding Administration (bid docs, bidders list, addenda, pre-bid conference, equivalency approvals per G.S.133) > CA (pre-construction meeting, progress meetings, field reports, payment certification with sales tax records, change orders) > Closeout (substantial & final inspection, consent of surety, lien releases, M/WBE reports, warranties, O&M manuals, record drawings within 60 days)." },

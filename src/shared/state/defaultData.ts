@@ -4,7 +4,7 @@ import type { ProjectData } from "./types";
 // Ported verbatim from Component.defaultData() (Ossa Fee Proposal App.dc.html
 // lines 1735-1806). Field values, defaults, and copy are unchanged.
 
-function isoDate(d: Date): string {
+export function isoDate(d: Date): string {
   const t = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
   return t.toISOString().slice(0, 10);
 }
@@ -25,7 +25,6 @@ export function defaultData(): ProjectData {
       projectManual: "No",
       bidding: "No",
       publicSector: "No",
-      outcome: "New Lead",
       leadGenBy: "",
       services: { sd: true, dd: true, cd: true, ca: true, ec: true, testfit: false, vr: false, hourlyCa: false },
       otherServicesChecked: {},
@@ -113,6 +112,18 @@ export function defaultData(): ProjectData {
       ],
       leadSources: ["Jack", "Andrew", "Renato", "Mary Anna Ossa", "Website Form", "Referral From"],
       downPayment: 0.1,
+    },
+    pipeline: {
+      status: "New Lead",
+      potentialFee: 0,
+      invoiced: 0,
+      remaining: 0,
+      chances: 25,
+      date: isoDate(now),
+      fallbackYear: String(now.getFullYear()),
+      lostReason: "",
+      yearSplits: [],
+      projectNumber: "",
     },
   };
 }
