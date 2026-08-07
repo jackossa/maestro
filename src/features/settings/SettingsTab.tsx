@@ -16,7 +16,7 @@ export function SettingsTab() {
 
   return (
     <div>
-      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 5 of 7</div>
+      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio</div>
       <h1 className="mt-[6px] mb-1 font-bold text-[30px] leading-[1.1] font-display tracking-[-.01em] text-os-ink">Settings — {s.projectName}</h1>
       <p className="m-0 mb-[26px] font-light text-[13.5px] text-os-600">These settings apply only to this project, not firm-wide.</p>
 
