@@ -38,6 +38,13 @@ describe("isWithinDueDateFilter", () => {
     expect(isWithinDueDateFilter("2026-08-15", "this-week", TODAY)).toBe(false);
     expect(isWithinDueDateFilter("2026-08-01", "this-week", TODAY)).toBe(false);
   });
+  it("'this-month' matches today through +30 days inclusive, not before today", () => {
+    expect(isWithinDueDateFilter(TODAY, "this-month", TODAY)).toBe(true);
+    expect(isWithinDueDateFilter("2026-08-14", "this-month", TODAY)).toBe(true);
+    expect(isWithinDueDateFilter("2026-09-06", "this-month", TODAY)).toBe(true);
+    expect(isWithinDueDateFilter("2026-09-07", "this-month", TODAY)).toBe(false);
+    expect(isWithinDueDateFilter("2026-08-01", "this-month", TODAY)).toBe(false);
+  });
   it("'custom' respects an inclusive start/end range", () => {
     expect(isWithinDueDateFilter("2026-08-10", "custom", TODAY, "2026-08-05", "2026-08-15")).toBe(true);
     expect(isWithinDueDateFilter("2026-08-01", "custom", TODAY, "2026-08-05", "2026-08-15")).toBe(false);

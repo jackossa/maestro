@@ -14,9 +14,9 @@ export function getDueDateBucket(dueDate: string | null, todayIso: string): DueD
 export type DueDateFilter = "any" | "overdue" | "today" | "this-week" | "this-month" | "custom";
 
 function addDaysIso(iso: string, days: number): string {
-  const d = new Date(iso + "T00:00:00");
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  const [y, m, d] = iso.split("-").map(Number);
+  const utc = new Date(Date.UTC(y, m - 1, d + days));
+  return utc.toISOString().slice(0, 10);
 }
 
 export function isWithinDueDateFilter(
