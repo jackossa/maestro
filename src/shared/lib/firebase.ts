@@ -9,7 +9,17 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // spec, "Security" section.
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  // Use the page's own origin as the auth domain (rather than the default
+  // <project>.firebaseapp.com) so the OAuth redirect round-trips through
+  // this app's own domain instead of a third-party one -- Safari/Firefox/
+  // locked-down Chrome block third-party storage access during the
+  // redirect, which otherwise silently breaks sign-in with no error.
+  // Works automatically on both the production domain and any Vercel
+  // preview domain, since it's always "wherever this page is being
+  // served from." Requires the vercel.json rewrite (proxying /__/auth/*
+  // on this same domain through to Firebase's real handler) to actually
+  // work -- see vercel.json.
+  authDomain: window.location.hostname,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,

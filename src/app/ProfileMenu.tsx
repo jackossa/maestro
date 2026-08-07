@@ -9,9 +9,10 @@ import { useAppState } from "../shared/state/store";
 // Sign-In design spec, "Authenticated UI".
 export function ProfileMenu() {
   const { user, signOut } = useAuth();
-  const { goToAccount } = useAppState();
+  const { state, goToAccount } = useAppState();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const isActive = state.view === "account";
 
   useEffect(() => {
     if (!open) return;
@@ -40,7 +41,9 @@ export function ProfileMenu() {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="Account menu"
-        className="w-full flex items-center gap-[10px] px-[10px] py-[8px] rounded-full text-left hover:bg-white/[.08] focus:outline-none focus:ring-2 focus:ring-os-orange-300"
+        className={`w-full flex items-center gap-[10px] px-[10px] py-[8px] rounded-full text-left focus:outline-none focus:ring-2 focus:ring-os-orange-300 ${
+          isActive ? "bg-white/[.12]" : "hover:bg-white/[.08]"
+        }`}
       >
         {user.photoURL ? (
           <img src={user.photoURL} alt="" className="w-7 h-7 rounded-full flex-none" referrerPolicy="no-referrer" />
@@ -69,7 +72,7 @@ export function ProfileMenu() {
               setOpen(false);
               signOut();
             }}
-            className="w-full text-left px-[14px] py-[10px] text-[13px] font-medium text-white/85 hover:bg-white/[.08]"
+            className="w-full min-h-[44px] flex items-center text-left px-[14px] text-[13px] font-medium text-white/85 hover:bg-white/[.08]"
           >
             Sign out
           </button>

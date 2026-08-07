@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "../shared/state/auth";
 import { AppStateProvider, useAppState } from "../shared/state/store";
 import { LoginScreen } from "../features/auth/LoginScreen";

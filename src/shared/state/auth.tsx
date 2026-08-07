@@ -60,11 +60,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (cancelled || !result) return;
         if (!isAuthorizedDomain(result.user.email, WORKSPACE_DOMAIN)) {
           deliberateSignOut.current = true;
-          firebaseSignOut(auth).catch(() => {});
+          firebaseSignOut(auth).catch((err) => {
+            console.warn("[auth]", err);
+            deliberateSignOut.current = false;
+          });
           setError("wrong-domain");
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn("[auth]", err);
         if (!cancelled) setError("generic");
       });
 
@@ -74,15 +78,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (firebaseUser && isAuthorizedDomain(firebaseUser.email, WORKSPACE_DOMAIN)) {
         wasSignedIn.current = true;
         deliberateSignOut.current = false;
+        setError(null);
         setUser(toAuthUser(firebaseUser));
         setStatus("signed-in");
         return;
       }
 
       if (firebaseUser) {
-        // Signed in but wrong domain -- already being signed out above;
-        // this listener fires again with null shortly after. Don't flip
-        // to signed-in for this user even momentarily.
+        // Signed in but wrong domain. May have already been signed out by
+        // the getRedirectResult handler above (same page load as the
+        // redirect), or may be a stale wrong-domain session persisting
+        // from an interrupted sign-out on an earlier load -- either way,
+        // never let status become "signed-in" for this user, and always
+        // resolve to a real terminal state rather than leaving status
+        // stuck at "loading" forever.
+        deliberateSignOut.current = true;
+        wasSignedIn.current = false;
+        setError((prev) => prev ?? "wrong-domain");
+        firebaseSignOut(auth).catch((err) => {
+          console.warn("[auth]", err);
+          deliberateSignOut.current = false;
+        });
+        setUser(null);
+        setStatus("signed-out");
         return;
       }
 
@@ -104,7 +122,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(() => {
     setSigningIn(true);
     setError(null);
-    signInWithRedirect(auth, googleProvider).catch(() => {
+    signInWithRedirect(auth, googleProvider).catch((err) => {
+      console.warn("[auth]", err);
       setSigningIn(false);
       setError("generic");
     });
@@ -112,7 +131,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(() => {
     deliberateSignOut.current = true;
-    firebaseSignOut(auth).catch(() => {});
+    setError(null);
+    firebaseSignOut(auth).catch(() => {
+      deliberateSignOut.current = false;
+    });
   }, []);
 
   const clearError = useCallback(() => setError(null), []);

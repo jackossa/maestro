@@ -38,7 +38,7 @@ export function LoginScreen() {
           )}
         </div>
 
-        {status !== "loading" && (
+        {(error || status !== "loading") && (
           <div className="mt-8 w-full flex flex-col items-center gap-3">
             {error ? (
               <>
