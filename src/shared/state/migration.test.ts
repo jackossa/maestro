@@ -104,4 +104,51 @@ describe("migrateToUnifiedStore", () => {
     const result = migrateToUnifiedStore(oldStore, null);
     expect(result.order).toEqual(["p1"]);
   });
+
+  it("applies legacy status renames to linked opportunities via pipelineFromOpp", () => {
+    const oldStore = makeOldStore();
+    const oldOpp: OldOppState = {
+      year: "2026",
+      pendingTarget: 500000,
+      projects: [
+        {
+          _id: "opp1", client: "Test Client", project: "Test Project", status: "Pending",
+          potentialFee: 45000, invoiced: 10000, remaining: 35000, chances: 75,
+          date: "2026-03-01", fallbackYear: "2026", lostReason: "",
+          yearSplits: [], projectNumber: "26-01", projectId: "p1",
+        },
+      ],
+    };
+
+    const result = migrateToUnifiedStore(oldStore, oldOpp);
+
+    expect(result.projects.p1.data.pipeline.status).toBe("Pending Approval");
+  });
+
+  it("synthesizes a new project for an opportunity with a stale/dangling projectId", () => {
+    const oldStore = makeOldStore();
+    const oldOpp: OldOppState = {
+      year: "2026",
+      pendingTarget: 500000,
+      projects: [
+        {
+          _id: "opp3", client: "Dangling Client", project: "Dangling Project", status: "New Lead",
+          potentialFee: 3000, invoiced: 500, remaining: 2500, chances: 50,
+          date: "2026-02-15", fallbackYear: "2026", lostReason: "",
+          yearSplits: [], projectNumber: "26-03", projectId: "p-deleted",
+        },
+      ],
+    };
+
+    const result = migrateToUnifiedStore(oldStore, oldOpp);
+
+    expect(result.order).toHaveLength(2);
+    const newId = result.order.find((id) => id !== "p1")!;
+    expect(newId).toBeDefined();
+    expect(result.projects[newId].data.info.name).toBe("Dangling Project");
+    expect(result.projects[newId].data.info.client).toBe("Dangling Client");
+    expect(result.projects[newId].data.pipeline.potentialFee).toBe(3000);
+    expect(result.projects[newId].data.pipeline.invoiced).toBe(500);
+    expect(result.projects[newId].data.pipeline.projectNumber).toBe("26-03");
+  });
 });

@@ -90,6 +90,7 @@ export function migrateToUnifiedStore(oldStore: OldStore, oldOpp: OldOppState | 
 
   const projects: Record<string, ProjectRecord> = {};
   const order: string[] = [];
+  const consumedProjectIds = new Set<string>();
 
   for (const id of oldStore.order) {
     const rec = oldStore.projects[id];
@@ -117,9 +118,20 @@ export function migrateToUnifiedStore(oldStore: OldStore, oldOpp: OldOppState | 
 
     projects[id] = { created: rec.created, updated: rec.updated, data: merged };
     order.push(id);
+    if (linkedOpp) consumedProjectIds.add(id);
   }
 
-  for (const opp of oppWithoutProject) {
+  // Collect opps with dangling/orphaned projectIds (stale links to deleted projects)
+  const orphanedOpps: OldOppProject[] = [];
+  for (const [projectId, opp] of oppByProjectId) {
+    if (!consumedProjectIds.has(projectId)) {
+      orphanedOpps.push(opp);
+    }
+  }
+
+  // Synthesize new projects for both unlinked opps and opps with dangling projectIds
+  const allOrphanedOpps = [...oppWithoutProject, ...orphanedOpps];
+  for (const opp of allOrphanedOpps) {
     const id = synthesizeId();
     const data = defaultData();
     data.info.name = opp.project || "Untitled Project";
