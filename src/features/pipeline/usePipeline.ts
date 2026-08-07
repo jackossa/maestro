@@ -44,7 +44,6 @@ export function usePipeline() {
     addProjectSplit,
     removeProjectSplit,
     updateProjectSplit,
-    setPendingTarget,
     setPipelineYear,
   } = useAppState();
   const { store } = state;
@@ -55,7 +54,6 @@ export function usePipeline() {
   const [sortDir, setSortDir] = useState(1);
   const [activeField, setActiveField] = useState<string | null>(null);
   const [view, setView] = useState<"list" | "board">("list");
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [splitOpenId, setSplitOpenId] = useState<string | null>(null);
 
   const allRows: PipelineRow[] = store.order.map((id) => ({
@@ -305,12 +303,6 @@ export function usePipeline() {
     oppYearOptions,
     onOppYearChange: (v: string) => setPipelineYear(v),
     onOppAddProject: addProject,
-    onOppToggleSettings: () => setSettingsOpen((v) => !v),
-    oppSettingsOpen: settingsOpen,
-    oppPendingTargetDisplay: activeField === "__target__" ? String(oppTarget) : oppFmtMoney(oppTarget),
-    onOppTargetFocus: () => setActiveField("__target__"),
-    onOppTargetBlur: () => setActiveField(null),
-    onOppTargetChange: (v: string) => setPendingTarget(oppParseMoney(v)),
     oppProgressPct,
     oppProgressCaption: oppFmtMoney(oppPendingTotal) + " of " + oppFmtMoney(oppTarget) + " target",
     oppKpis,

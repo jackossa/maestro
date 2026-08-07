@@ -78,27 +78,11 @@ export function PipelineTab() {
               </option>
             ))}
           </select>
-          <button onClick={p.onOppToggleSettings} className="px-4 py-2 border border-os-300 bg-white text-os-700 font-bold text-[11px] tracking-[.06em] rounded-full hover:border-os-orange hover:text-os-orange-700">
-            TARGET
-          </button>
           <button onClick={p.onOppAddProject} className="px-[18px] py-2 border border-os-orange bg-os-orange text-white font-bold text-[11px] tracking-[.06em] rounded-full hover:bg-accent-hover">
             + ADD OPPORTUNITY
           </button>
         </div>
       </div>
-
-      {p.oppSettingsOpen && (
-        <div className="flex items-center gap-3 mt-[14px] mb-1 px-4 py-3 bg-[#fdf4e3] border border-os-300 rounded-brand-sm">
-          <span className="font-medium text-[13px] text-os-700">Pending-Approval Target ({p.oppYearValue})</span>
-          <input
-            value={p.oppPendingTargetDisplay}
-            onFocus={p.onOppTargetFocus}
-            onBlur={p.onOppTargetBlur}
-            onChange={(e) => p.onOppTargetChange(e.target.value)}
-            className="box-border w-[140px] px-[10px] py-[6px] border border-os-300 rounded-brand-sm bg-white font-bold text-[13px] text-right text-os-ink"
-          />
-        </div>
-      )}
 
       <div className="grid grid-cols-4 gap-[14px] mt-[18px] max-md:grid-cols-2">
         {p.oppKpis.map((k) => (
