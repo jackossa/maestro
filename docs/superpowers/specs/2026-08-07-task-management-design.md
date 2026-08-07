@@ -54,12 +54,22 @@ persistence changes. Three new collections:
 - **`taskProjects/{projectId}/tasks/{taskId}`** (subcollection) — `{
   parentTaskId, title, description, assigneeId, assigneeName, dueDate,
   status, completed, sortOrder, createdAt, updatedAt, createdBy,
-  projectIsShared, projectMembers, projectName }`. The last three fields are
-  denormalized copies of the parent project's `isShared`/`members`/`name` —
-  this lets the My Tasks screen run a single Firestore **collection-group
-  query** (`collectionGroup("tasks").where("assigneeId", "==", uid)`)
-  across every project without a second read per task, and lets security
-  rules evaluate visibility without an extra `get()`.
+  projectName }`. `projectName` is a denormalized copy of the parent
+  project's name — a display-only convenience so My Tasks can show
+  "Smith Residence" next to a task without a second read per task; it's
+  kept in sync by the rename operation batch-updating every child task.
+  `isShared`/`members` are **not** denormalized: an earlier draft of this
+  spec did, but that creates a real sync-bug class (a task keeps showing
+  as private after its project is shared, until something else happens to
+  touch that specific task). Security rules instead call `get()` on the
+  parent `taskProjects/{projectId}` document to check `isShared`/
+  `createdBy` — a standard Firestore pattern, one extra read per rule
+  evaluation, and it works correctly for collection-group queries too
+  (Firestore evaluates rules at the document's real path, and the
+  `projectId` path segment is captured as a rule variable). This is what
+  makes the My Tasks collection-group query
+  (`collectionGroup("tasks").where("assigneeId", "==", uid)`) correct by
+  construction instead of dependent on kept-in-sync copies.
 
 ### Sort order
 
@@ -106,9 +116,11 @@ navigating away.
 - Firestore security rules: a `taskProjects` doc is readable/writable if
   `request.auth.token.email` ends in the Workspace domain **and**
   (`isShared == true` **or** `createdBy == request.auth.uid`). Tasks under
-  a project inherit the same check via their denormalized
-  `projectIsShared`/`projectMembers` fields, so collection-group queries
-  and per-document rule checks don't need an extra read to the parent.
+  a project inherit the same check via a `get()` on the parent
+  `taskProjects/{projectId}` document (the `projectId` path segment is
+  captured as a rule variable) — this applies correctly to the My Tasks
+  collection-group query too, since Firestore evaluates a document's rule
+  at its real path regardless of how it was queried.
 - Assignee picker: in a Private project, defaults to "me" only (nobody else
   can see the project, so assigning to someone else would be silently
   useless); in a Shared project, the full roster from `users/`.
