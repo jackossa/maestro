@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { AuthProvider, useAuth } from "../shared/state/auth";
 import { AppStateProvider, useAppState } from "../shared/state/store";
+import { LoginScreen } from "../features/auth/LoginScreen";
 import { Sidebar } from "./Sidebar";
 import { ProjectInfoTab } from "../features/project-info/ProjectInfoTab";
 import { FeeCalculationTab } from "../features/fee-calculation/FeeCalculationTab";
@@ -7,11 +9,17 @@ import { ProjectScheduleTab } from "../features/project-schedule/ProjectSchedule
 import { SettingsTab } from "../features/settings/SettingsTab";
 import { PipelineTab } from "../features/pipeline/PipelineTab";
 import { ProposalBuilderTab } from "../features/proposal-builder/ProposalBuilderTab";
+import { AccountTab } from "../features/account/AccountTab";
 
 // Pipeline is the app's home screen; opening a project switches to its
 // four-tab workspace; Settings is reachable from either. See the Pipeline
 // Unification design spec, "Navigation & screens". No URL routing --
 // navigation is state-only (unchanged prior decision).
+//
+// The whole app additionally sits behind Google sign-in (AuthProvider +
+// AuthGate below) -- see the Google Sign-In design spec. Signed-out users
+// never mount AppStateProvider, so project data can never flash on screen
+// before auth is confirmed.
 
 function Splash() {
   return (
@@ -52,6 +60,7 @@ function Shell() {
             <PipelineTab />
           </div>
           {settingsVisible && <SettingsTab />}
+          {state.view === "account" && <AccountTab />}
           {projectTabVisible && state.projectTab === 1 && <ProjectInfoTab />}
           {projectTabVisible && state.projectTab === 2 && <FeeCalculationTab />}
           {projectTabVisible && state.projectTab === 3 && <ProjectScheduleTab />}
@@ -62,10 +71,20 @@ function Shell() {
   );
 }
 
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const { status } = useAuth();
+  if (status !== "signed-in") return <LoginScreen />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
-    <AppStateProvider>
-      <Shell />
-    </AppStateProvider>
+    <AuthProvider>
+      <AuthGate>
+        <AppStateProvider>
+          <Shell />
+        </AppStateProvider>
+      </AuthGate>
+    </AuthProvider>
   );
 }
