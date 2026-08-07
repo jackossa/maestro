@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Central Firebase init. All Firebase config values here are public
 // identifiers, not secrets -- Google designs them to be exposed in
@@ -33,3 +34,5 @@ export const auth = getAuth(firebaseApp);
 
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ hd: WORKSPACE_DOMAIN });
+
+export const db = getFirestore(firebaseApp);

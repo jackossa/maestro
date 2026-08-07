@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider, WORKSPACE_DOMAIN } from "../lib/firebase";
 import { isAuthorizedDomain } from "../lib/authDomain";
+import { upsertCurrentUser } from "../../features/tasks/userRoster";
 
 // Owns Firebase Auth state for the whole app. Deliberately separate from
 // store.tsx/AppStateProvider -- identity is not project data, and this
@@ -19,6 +20,7 @@ export type AuthStatus = "loading" | "signed-out" | "signed-in";
 export type AuthErrorKind = "generic" | "wrong-domain" | "expired";
 
 export interface AuthUser {
+  uid: string;
   displayName: string;
   email: string;
   photoURL: string | null;
@@ -38,6 +40,7 @@ const AuthContext = createContext<AuthContextShape | null>(null);
 
 function toAuthUser(u: User): AuthUser {
   return {
+    uid: u.uid,
     displayName: u.displayName || u.email || "Signed in",
     email: u.email || "",
     photoURL: u.photoURL,
@@ -79,8 +82,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         wasSignedIn.current = true;
         deliberateSignOut.current = false;
         setError(null);
-        setUser(toAuthUser(firebaseUser));
+        const authUser = toAuthUser(firebaseUser);
+        setUser(authUser);
         setStatus("signed-in");
+        upsertCurrentUser(authUser.uid, {
+          displayName: authUser.displayName,
+          email: authUser.email,
+          photoURL: authUser.photoURL,
+        }).catch((err) => console.warn("[auth] roster upsert failed", err));
         return;
       }
 
