@@ -14,7 +14,10 @@ const fmtDShort = (dt: Date) => dt.toLocaleDateString("en-US", { month: "numeric
 // fee, the print-document computed fields (~2846-2887), and onCreatePdf.
 export function useProposalBuilder() {
   const { currentProject, upd } = useAppState();
-  const { data } = currentProject;
+  // currentProject is typed as possibly undefined because it genuinely can be
+  // (zero-projects state), but this hook only mounts inside ProposalBuilderTab,
+  // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
+  const { data } = currentProject!;
   const { info, settings: S, proposal } = data;
   const fc = computeFeeCalc(data);
   const { activePhases } = getPhaseGates(info);

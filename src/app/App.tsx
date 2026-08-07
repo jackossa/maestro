@@ -38,7 +38,9 @@ function Shell() {
     return () => clearTimeout(t);
   }, []);
 
-  const projectTabVisible = state.view === "project";
+  const hasProject = !!state.store.projects[state.store.currentId];
+  const projectTabVisible = state.view === "project" && hasProject;
+  const settingsVisible = state.view === "settings" && hasProject;
 
   return (
     <>
@@ -49,21 +51,11 @@ function Shell() {
           <div style={{ display: state.view === "pipeline" ? "block" : "none" }}>
             <PipelineTab />
           </div>
-          <div style={{ display: state.view === "settings" ? "block" : "none" }}>
-            <SettingsTab />
-          </div>
-          <div style={{ display: projectTabVisible && state.projectTab === 1 ? "block" : "none" }}>
-            <ProjectInfoTab />
-          </div>
-          <div style={{ display: projectTabVisible && state.projectTab === 2 ? "block" : "none" }}>
-            <FeeCalculationTab />
-          </div>
-          <div style={{ display: projectTabVisible && state.projectTab === 3 ? "block" : "none" }}>
-            <ProjectScheduleTab />
-          </div>
-          <div style={{ display: projectTabVisible && state.projectTab === 7 ? "block" : "none" }}>
-            <ProposalBuilderTab />
-          </div>
+          {settingsVisible && <SettingsTab />}
+          {projectTabVisible && state.projectTab === 1 && <ProjectInfoTab />}
+          {projectTabVisible && state.projectTab === 2 && <FeeCalculationTab />}
+          {projectTabVisible && state.projectTab === 3 && <ProjectScheduleTab />}
+          {projectTabVisible && state.projectTab === 7 && <ProposalBuilderTab />}
         </main>
       </div>
     </>

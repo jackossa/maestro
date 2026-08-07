@@ -14,9 +14,12 @@ import { GO_Q, USE_TYPES } from "../../shared/lib/constants";
 
 export function useProjectInfo() {
   const { currentProject, upd } = useAppState();
-  const info = currentProject.data.info;
-  const settings = currentProject.data.settings;
-  const pipeline = currentProject.data.pipeline;
+  // currentProject is typed as possibly undefined because it genuinely can be
+  // (zero-projects state), but this hook only mounts inside ProjectInfoTab,
+  // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
+  const info = currentProject!.data.info;
+  const settings = currentProject!.data.settings;
+  const pipeline = currentProject!.data.pipeline;
 
   const { sfT } = computeAreaCalc(info, settings);
   const totalSF = num(sfT) + " SF";

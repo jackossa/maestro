@@ -44,7 +44,7 @@ describe("duplicateProjectData", () => {
     const source = defaultData();
     source.info.areas = [{ area: "Suite 100", useType: "Office Upfit", sf: "5000", selPct: 10, selSF: 11 }];
     const result = duplicateProjectData(source, "26-05");
-    expect(result.info.areas).toEqual(defaultData().info.areas);
+    expect(result.info.areas).toEqual([{ area: "", useType: "", sf: "", selPct: null, selSF: null }]);
   });
 
   it("resets pipeline to New Lead with today's date and the given project number", () => {

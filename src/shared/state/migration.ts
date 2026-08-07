@@ -84,8 +84,13 @@ export function migrateToUnifiedStore(oldStore: OldStore, oldOpp: OldOppState | 
   const oppByProjectId = new Map<string, OldOppProject>();
   const oppWithoutProject: OldOppProject[] = [];
   (oldOpp?.projects || []).forEach((p) => {
-    if (p.projectId) oppByProjectId.set(p.projectId, p);
-    else oppWithoutProject.push(p);
+    if (p.projectId) {
+      const existing = oppByProjectId.get(p.projectId);
+      if (existing) oppWithoutProject.push(existing);
+      oppByProjectId.set(p.projectId, p);
+    } else {
+      oppWithoutProject.push(p);
+    }
   });
 
   const projects: Record<string, ProjectRecord> = {};

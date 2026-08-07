@@ -6,7 +6,10 @@ import { fmtIsoD } from "../../shared/lib/formatters";
 // handler (Ossa Fee Proposal App.dc.html lines 2834-2844).
 export function useProjectSchedule() {
   const { currentProject, upd } = useAppState();
-  const { data } = currentProject;
+  // currentProject is typed as possibly undefined because it genuinely can be
+  // (zero-projects state), but this hook only mounts inside ProjectScheduleTab,
+  // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
+  const { data } = currentProject!;
   const sched = computeSchedule(data);
 
   const onWeeksChange = (k: string, v: number) => upd((d) => { d.calc.weeks[k] = v; });

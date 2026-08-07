@@ -1,4 +1,5 @@
 import type { ProjectData } from "../../shared/state/types";
+import { isoDate } from "../../shared/state/defaultData";
 
 // "Start a new project from a previous one" -- clones the reusable setup
 // (team/rates/markups/service-description overrides/clarifications text)
@@ -8,7 +9,7 @@ import type { ProjectData } from "../../shared/state/types";
 // attached to the original -- see the design spec, "Duplicate" section.
 export function duplicateProjectData(source: ProjectData, projectNumber: string): ProjectData {
   const cloned: ProjectData = JSON.parse(JSON.stringify(source));
-  const today = new Date().toISOString().slice(0, 10);
+  const today = isoDate(new Date());
 
   cloned.info.name = "";
   cloned.info.client = "";

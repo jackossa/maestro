@@ -74,13 +74,15 @@ function loadStore(): Store {
         ? migrateToUnifiedStore(oldStore, oldOpp)
         : freshStore();
       try {
+        localStorage.setItem(KEY, JSON.stringify(store));
         localStorage.setItem(MIGRATION_FLAG_KEY, MIGRATION_FLAG_VALUE);
       } catch {
         /* storage unavailable */
       }
-    } else {
-      store = freshStore();
     }
+    // else: flag already set but store doesn't look migrated -- fall through
+    // with whatever was read; migrate() below backfills defaults per-project
+    // rather than discarding real data.
   }
 
   if (!store || !store.projects || !Array.isArray(store.order)) store = freshStore();
@@ -110,7 +112,7 @@ interface AppStateShape {
 
 interface AppContextShape {
   state: AppStateShape;
-  currentProject: ProjectRecord;
+  currentProject: ProjectRecord | undefined;
   upd: (fn: (data: ProjectData, store: Store) => void) => void;
   updStore: (fn: (store: Store) => void) => void;
   goToPipeline: () => void;
@@ -217,6 +219,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       store.projects[id] = { created: Date.now(), updated: Date.now(), data };
       store.order.push(id);
       store.currentId = id;
+      store.pipelineSettings.year = year;
       persistStore(store);
       return { ...s, store, view: "project", projectTab: 1, savedAt: Date.now() };
     });
@@ -234,6 +237,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         store.projects[id] = { created: Date.now(), updated: Date.now(), data: duplicateProjectData(source.data, projectNumber) };
         store.order.push(id);
         store.currentId = id;
+        store.pipelineSettings.year = year;
         persistStore(store);
         return { ...s, store, view: "project", projectTab: 1, savedAt: Date.now() };
       });

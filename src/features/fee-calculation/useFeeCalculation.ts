@@ -11,10 +11,13 @@ import { PHASES } from "../../shared/lib/constants";
 
 export function useFeeCalculation() {
   const { currentProject, upd } = useAppState();
-  const { info, calc: wk, settings: S } = currentProject.data;
+  // currentProject is typed as possibly undefined because it genuinely can be
+  // (zero-projects state), but this hook only mounts inside FeeCalculationTab,
+  // which App.tsx's Shell gates on hasProject -- see src/app/App.tsx.
+  const { info, calc: wk, settings: S } = currentProject!.data;
 
   const { sfT, ccT, m1T, m2T, calcRows: rawCalcRows } = computeAreaCalc(info, S);
-  const fc = computeFeeCalc(currentProject.data);
+  const fc = computeFeeCalc(currentProject!.data);
 
   const calcRows = rawCalcRows.map((r) => ({
     ...r,

@@ -320,6 +320,7 @@ export function usePipeline() {
     oppColumns,
     oppRows,
     oppNoResults: oppRows.length === 0,
+    hasNoProjectsAtAll: store.order.length === 0,
     oppResultsCaption: oppRows.length + " of " + oppAllYear.length + " opportunities shown",
     oppSearch: search,
     onOppSearchChange: setSearch,

@@ -4,7 +4,7 @@ import type { ProjectData } from "./types";
 // Ported verbatim from Component.defaultData() (Ossa Fee Proposal App.dc.html
 // lines 1735-1806). Field values, defaults, and copy are unchanged.
 
-function isoDate(d: Date): string {
+export function isoDate(d: Date): string {
   const t = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
   return t.toISOString().slice(0, 10);
 }

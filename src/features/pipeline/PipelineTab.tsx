@@ -10,7 +10,7 @@ export function PipelineTab() {
 
   return (
     <div>
-      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio · 6 of 7</div>
+      <div className="font-bold text-[11px] tracking-[.2em] uppercase text-os-orange-700">Ossa Studio</div>
       <h1 className="mt-[6px] mb-1 font-bold text-[30px] leading-[1.1] font-display tracking-[-.01em] text-os-ink">Pipeline</h1>
       <p className="m-0 mb-[26px] font-light text-[13.5px] text-os-600">Trends and advice drawn from every project saved in this browser.</p>
 
@@ -275,7 +275,9 @@ export function PipelineTab() {
             </div>
           ))}
           {p.oppNoResults && (
-            <p className="my-5 font-light text-[13.5px] text-os-500 text-center border border-dashed border-os-300 p-5 rounded-brand-sm">No opportunities match this filter.</p>
+            <p className="my-5 font-light text-[13.5px] text-os-500 text-center border border-dashed border-os-300 p-5 rounded-brand-sm">
+              {p.hasNoProjectsAtAll ? "No projects yet — click + Add Opportunity to create your first one." : "No opportunities match this filter."}
+            </p>
           )}
           <p className="mt-[10px] mb-0 font-light text-xs text-os-500">{p.oppResultsCaption}</p>
         </div>
