@@ -262,11 +262,12 @@ export function PipelineTab() {
               </div>
               <div className="w-[8%] px-[10px] text-right font-bold text-xs text-os-ink">{r.expectedValueDisplay}</div>
               <div className="w-[12%] px-[10px] flex gap-[5px] justify-end">
-                {r.hasProject && (
-                  <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
-                    OPEN
-                  </button>
-                )}
+                <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
+                  OPEN
+                </button>
+                <button onClick={r.onDuplicate} title="Start a new project from this one's setup" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
+                  DUPLICATE
+                </button>
                 <button onClick={r.onRemove} title="Remove" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
                   ×
                 </button>
@@ -298,6 +299,13 @@ export function PipelineTab() {
                     <span>{card.fee}</span>
                     <span className="text-os-500 font-medium">{card.chances}%</span>
                   </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); card.onDuplicate(); }}
+                    title="Start a new project from this one's setup"
+                    className="mt-[6px] w-full px-2 py-1 border border-os-300 bg-white text-os-600 font-bold text-[9px] tracking-[.05em] rounded-full hover:border-os-orange hover:text-os-orange-700"
+                  >
+                    DUPLICATE
+                  </button>
                   {card.isLost && (
                     <input
                       value={card.lostReason}
