@@ -53,7 +53,7 @@ export function LoginScreen() {
                 </button>
                 <button
                   onClick={clearError}
-                  className="px-2 py-1 rounded-full text-[13px] font-medium text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-os-orange-300"
+                  className="h-[46px] px-4 rounded-full text-[13px] font-medium text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-os-orange-300 flex items-center justify-center"
                 >
                   Back to sign-in
                 </button>
