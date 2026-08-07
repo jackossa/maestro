@@ -16,6 +16,7 @@ export function useProjectInfo() {
   const { currentProject, upd } = useAppState();
   const info = currentProject.data.info;
   const settings = currentProject.data.settings;
+  const pipeline = currentProject.data.pipeline;
 
   const { sfT } = computeAreaCalc(info, settings);
   const totalSF = num(sfT) + " SF";
@@ -136,7 +137,7 @@ export function useProjectInfo() {
   const verdictColor = verdict === "GO" ? POSITIVE_COLOR : verdict === "CAUTION" ? CAUTION_COLOR : STOP_COLOR;
 
   // ---- header status pill ----
-  const projectStatusLabel = info.outcome || "New Lead";
+  const projectStatusLabel = pipeline.status || "New Lead";
   const projectStatusPillColor = oppStatusColor(projectStatusLabel);
 
   return {
