@@ -195,7 +195,7 @@ export function usePipeline() {
     });
   }
 
-  const moneyDisplay = (p: PipelineRow, field: "potentialFee" | "invoiced" | "remaining") =>
+  const moneyDisplay = (p: PipelineRow, field: "potentialFee" | "invoiced") =>
     activeField === p.id + "::" + field ? String(p[field] ?? 0) : oppFmtMoney(p[field] as number);
 
   const oppRows = oppFiltered.map((p) => ({
@@ -208,7 +208,7 @@ export function usePipeline() {
     projectNumber: p.projectNumber || "",
     potentialFeeDisplay: moneyDisplay(p, "potentialFee"),
     invoicedDisplay: moneyDisplay(p, "invoiced"),
-    remainingDisplay: moneyDisplay(p, "remaining"),
+    remainingDisplay: oppFmtMoney((Number(p.potentialFee) || 0) - (Number(p.invoiced) || 0)),
     expectedValueDisplay: oppFmtMoney(oppComputedExpected(p)),
     chances: p.chances,
     chancesDisabled: p.status === "Won / In Process" || p.status === "Completed",
@@ -235,11 +235,9 @@ export function usePipeline() {
     onAddSplit: () => addProjectSplit(p.id),
     onPotentialFeeFocus: () => setActiveField(p.id + "::potentialFee"),
     onInvoicedFocus: () => setActiveField(p.id + "::invoiced"),
-    onRemainingFocus: () => setActiveField(p.id + "::remaining"),
     onFieldBlur: () => setActiveField(null),
     onPotentialFeeChange: (v: string) => updateProjectPipeline(p.id, "potentialFee", oppParseMoney(v)),
     onInvoicedChange: (v: string) => updateProjectPipeline(p.id, "invoiced", oppParseMoney(v)),
-    onRemainingChange: (v: string) => updateProjectPipeline(p.id, "remaining", oppParseMoney(v)),
     onChancesChange: (v: number) => updateProjectPipeline(p.id, "chances", v),
     onOpenProject: () => openProject(p.id, 1),
     onDuplicate: () => duplicateProject(p.id),

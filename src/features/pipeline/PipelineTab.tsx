@@ -158,26 +158,26 @@ export function PipelineTab() {
 
       {p.oppViewList && (
         <div className="overflow-x-auto mt-4">
-          <div className="flex min-w-[1100px] border-b-2 border-os-ink">
+          <div className="flex min-w-[1200px] border-b-2 border-os-ink">
             {p.oppColumns.map((c) => (
               <div
                 key={c.key}
                 onClick={c.onClick}
                 style={{ width: c.w }}
-                className={`px-[10px] py-2 font-bold text-[9.5px] tracking-[.06em] uppercase text-os-600 cursor-pointer whitespace-nowrap ${c.num ? "text-right" : "text-left"}`}
+                className={`flex-none px-[10px] py-2 font-bold text-[9.5px] tracking-[.06em] uppercase text-os-600 cursor-pointer whitespace-nowrap ${c.num ? "text-right" : "text-left"}`}
               >
                 {c.label} {c.sortIndicator}
               </div>
             ))}
-            <div className="w-[12%]" />
+            <div className="flex-none w-[210px]" />
           </div>
           {p.oppRows.map((r) => (
-            <div key={r._id} className="flex min-w-[1100px] items-center border-b border-os-200 py-[6px]">
-              <div className="w-[5%] px-[10px] font-medium text-[11.5px] text-os-600">{r.projectNumber}</div>
-              <div className="w-[7%] px-[10px]">
+            <div key={r._id} className="flex min-w-[1200px] items-center border-b border-os-200 py-[6px]">
+              <div className="flex-none w-[5%] px-[10px] font-medium text-[11.5px] text-os-600">{r.projectNumber}</div>
+              <div className="flex-none w-[7%] px-[10px]">
                 <input type="date" value={r.date} onChange={(e) => r.onDateChange(e.target.value)} className="box-border w-full px-1 py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-[11px] text-os-ink" />
               </div>
-              <div className="w-[13%] px-[10px]">
+              <div className="flex-none w-[13%] px-[10px]">
                 <select
                   value={r.status}
                   onChange={(e) => r.onStatusChange(e.target.value)}
@@ -199,13 +199,13 @@ export function PipelineTab() {
                   />
                 )}
               </div>
-              <div className="w-[13%] px-[10px]">
+              <div className="flex-none w-[13%] px-[10px]">
                 <input value={r.client} onChange={(e) => r.onClientChange(e.target.value)} placeholder="Client" className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-os-ink" />
               </div>
-              <div className="w-[14%] px-[10px]">
+              <div className="flex-none w-[14%] px-[10px]">
                 <input value={r.project} onChange={(e) => r.onProjectChange(e.target.value)} placeholder="Project" className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-os-ink" />
               </div>
-              <div className="w-[8%] px-[10px]">
+              <div className="flex-none w-[8%] px-[10px]">
                 <input
                   value={r.potentialFeeDisplay}
                   onFocus={r.onPotentialFeeFocus}
@@ -214,7 +214,7 @@ export function PipelineTab() {
                   className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-right text-os-ink"
                 />
               </div>
-              <div className="w-[7%] px-[10px]">
+              <div className="flex-none w-[7%] px-[10px]">
                 <input
                   value={r.invoicedDisplay}
                   onFocus={r.onInvoicedFocus}
@@ -223,16 +223,10 @@ export function PipelineTab() {
                   className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-right text-os-ink"
                 />
               </div>
-              <div className="w-[7%] px-[10px]">
-                <input
-                  value={r.remainingDisplay}
-                  onFocus={r.onRemainingFocus}
-                  onBlur={r.onFieldBlur}
-                  onChange={(e) => r.onRemainingChange(e.target.value)}
-                  className="box-border w-full px-[7px] py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-right text-os-ink"
-                />
+              <div className="flex-none w-[7%] px-[10px] text-right font-medium text-xs text-os-ink" title="Potential Fee minus Invoiced">
+                {r.remainingDisplay}
               </div>
-              <div className="w-[6%] px-[10px]">
+              <div className="flex-none w-[6%] px-[10px]">
                 <input
                   type="number"
                   min={0}
@@ -244,8 +238,8 @@ export function PipelineTab() {
                   className="box-border w-full px-1 py-[5px] border border-os-300 rounded-[8px] bg-[#fdf4e3] font-medium text-xs text-right text-os-ink disabled:bg-os-100 disabled:border-os-200 disabled:text-os-500 disabled:cursor-not-allowed"
                 />
               </div>
-              <div className="w-[8%] px-[10px] text-right font-bold text-xs text-os-ink">{r.expectedValueDisplay}</div>
-              <div className="w-[12%] px-[10px] flex gap-[5px] justify-end">
+              <div className="flex-none w-[8%] px-[10px] text-right font-bold text-xs text-os-ink">{r.expectedValueDisplay}</div>
+              <div className="flex-none w-[210px] px-[10px] flex gap-[5px] justify-end">
                 <button onClick={r.onOpenProject} title="Open linked project" className="px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
                   OPEN
                 </button>
