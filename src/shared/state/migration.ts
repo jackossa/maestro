@@ -119,7 +119,7 @@ export function migrateToUnifiedStore(oldStore: OldStore, oldOpp: OldOppState | 
           yearSplits: [],
           projectNumber: "",
         };
-    delete (merged.info as Record<string, unknown>).outcome;
+    delete (merged.info as unknown as Record<string, unknown>).outcome;
 
     projects[id] = { created: rec.created, updated: rec.updated, data: merged };
     order.push(id);

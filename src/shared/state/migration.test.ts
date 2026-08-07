@@ -49,7 +49,7 @@ describe("migrateToUnifiedStore", () => {
       yearSplits: [],
       projectNumber: "26-01",
     });
-    expect((result.projects.p1.data.info as Record<string, unknown>).outcome).toBeUndefined();
+    expect((result.projects.p1.data.info as unknown as Record<string, unknown>).outcome).toBeUndefined();
     expect(result.pipelineSettings).toEqual({ year: "2026", pendingTarget: 500000 });
   });
 

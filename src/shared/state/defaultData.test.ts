@@ -11,6 +11,6 @@ describe("defaultData", () => {
 
   it("does not include the old info.outcome field", () => {
     const d = defaultData();
-    expect((d.info as Record<string, unknown>).outcome).toBeUndefined();
+    expect((d.info as unknown as Record<string, unknown>).outcome).toBeUndefined();
   });
 });
