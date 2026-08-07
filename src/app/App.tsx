@@ -8,10 +8,10 @@ import { SettingsTab } from "../features/settings/SettingsTab";
 import { PipelineTab } from "../features/pipeline/PipelineTab";
 import { ProposalBuilderTab } from "../features/proposal-builder/ProposalBuilderTab";
 
-// Ported from the <div style="display:flex;min-height:100vh"> shell and the
-// splash-screen sc-if block (Ossa Fee Proposal App.dc.html lines 135-209).
-// Tabs are switched by state only -- no URL routing, matching the original
-// (confirmed decision: no router).
+// Pipeline is the app's home screen; opening a project switches to its
+// four-tab workspace; Settings is reachable from either. See the Pipeline
+// Unification design spec, "Navigation & screens". No URL routing --
+// navigation is state-only (unchanged prior decision).
 
 function Splash() {
   return (
@@ -38,29 +38,31 @@ function Shell() {
     return () => clearTimeout(t);
   }, []);
 
+  const projectTabVisible = state.view === "project";
+
   return (
     <>
       {showSplash && <Splash />}
       <div className="flex min-h-screen items-stretch max-md:block">
         <Sidebar />
         <main className="flex-1 min-w-0 px-11 pt-[34px] pb-[90px] max-w-[1280px] max-md:px-4 max-md:pt-5 max-md:pb-[60px]">
-          <div style={{ display: state.tab === 1 ? "block" : "none" }}>
-            <ProjectInfoTab />
-          </div>
-          <div style={{ display: state.tab === 2 ? "block" : "none" }}>
-            <FeeCalculationTab />
-          </div>
-          <div style={{ display: state.tab === 3 ? "block" : "none" }}>
-            <ProjectScheduleTab />
-          </div>
-          <div style={{ display: state.tab === 7 ? "block" : "none" }}>
-            <ProposalBuilderTab />
-          </div>
-          <div style={{ display: state.tab === 6 ? "block" : "none" }}>
+          <div style={{ display: state.view === "pipeline" ? "block" : "none" }}>
             <PipelineTab />
           </div>
-          <div style={{ display: state.tab === 5 ? "block" : "none" }}>
+          <div style={{ display: state.view === "settings" ? "block" : "none" }}>
             <SettingsTab />
+          </div>
+          <div style={{ display: projectTabVisible && state.projectTab === 1 ? "block" : "none" }}>
+            <ProjectInfoTab />
+          </div>
+          <div style={{ display: projectTabVisible && state.projectTab === 2 ? "block" : "none" }}>
+            <FeeCalculationTab />
+          </div>
+          <div style={{ display: projectTabVisible && state.projectTab === 3 ? "block" : "none" }}>
+            <ProjectScheduleTab />
+          </div>
+          <div style={{ display: projectTabVisible && state.projectTab === 7 ? "block" : "none" }}>
+            <ProposalBuilderTab />
           </div>
         </main>
       </div>
