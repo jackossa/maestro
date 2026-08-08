@@ -51,13 +51,16 @@ function ProjectPreviewTaskRowImpl({
       </div>
       <input
         type="date"
-        value={task.dueDate || ""}
+        defaultValue={task.dueDate || ""}
+        key={task.id + "-date"}
         onChange={(e) => onDueDateChange(task.id, e.target.value || null)}
-        className={`flex-none w-[76px] bg-transparent border-0 text-[11px] max-md:hidden ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}
+        aria-label={`Due date for ${task.title}`}
+        className={`flex-none w-[100px] bg-transparent border-0 text-[11px] max-md:hidden ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}
       />
       <select
         value={task.status}
         onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}
+        aria-label={`Status for ${task.title}`}
         className={`flex-none appearance-none cursor-pointer border-0 px-2 py-[2px] rounded-full font-bold text-[9.5px] tracking-[.03em] ${STATUS_CLASS[task.status]}`}
       >
         {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
