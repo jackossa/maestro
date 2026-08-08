@@ -47,8 +47,13 @@ export async function toggleTaskProjectShared(projectId: string, isShared: boole
   await updateDoc(doc(db, "taskProjects", projectId), { isShared, updatedAt: Date.now() });
 }
 
-export async function updateTaskProjectSortOrder(projectId: string, sortOrder: number): Promise<void> {
-  await updateDoc(doc(db, "taskProjects", projectId), { sortOrder, updatedAt: Date.now() });
+export async function applyProjectReorder(writes: { id: string; sortOrder: number }[]): Promise<void> {
+  const batch = writeBatch(db);
+  const now = Date.now();
+  writes.forEach((w) => {
+    batch.update(doc(db, "taskProjects", w.id), { sortOrder: w.sortOrder, updatedAt: now });
+  });
+  await batch.commit();
 }
 
 export async function deleteTaskProjectCascade(projectId: string): Promise<void> {

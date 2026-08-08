@@ -5,8 +5,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
 import { computeSortOrder } from "./sortOrder";
-import { sortProjectsForDisplay } from "./sortProjects";
-import { createTaskProject, deleteTaskProjectCascade, toggleTaskProjectShared, updateTaskProjectSortOrder } from "./taskProjectsApi";
+import { computeProjectReorder, sortProjectsForDisplay } from "./sortProjects";
+import { applyProjectReorder, createTaskProject, deleteTaskProjectCascade, toggleTaskProjectShared } from "./taskProjectsApi";
 import { useTaskProjectsList } from "./useTaskProjectsList";
 import { ProjectAccordionTasks } from "./ProjectAccordionTasks";
 import type { TaskProject } from "./types";
@@ -104,16 +104,10 @@ export function ProjectsScreen({ onOpenProject, onOpenTask }: { onOpenProject: (
     async (event: DragEndEvent) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
-      const activeIndex = sorted.findIndex((p) => p.id === active.id);
-      const overIndex = sorted.findIndex((p) => p.id === over.id);
-      if (activeIndex === -1 || overIndex === -1) return;
-      const reordered = [...sorted];
-      const [moved] = reordered.splice(activeIndex, 1);
-      reordered.splice(overIndex, 0, moved);
-      const before = reordered[overIndex - 1]?.sortOrder ?? null;
-      const after = reordered[overIndex + 1]?.sortOrder ?? null;
+      const writes = computeProjectReorder(sorted, String(active.id), String(over.id));
+      if (writes.length === 0) return;
       try {
-        await updateTaskProjectSortOrder(moved.id, computeSortOrder(before, after));
+        await applyProjectReorder(writes);
       } catch (err) {
         console.warn("[tasks] reorder project failed", err);
         showToast("Couldn't reorder. Please try again.");
@@ -175,6 +169,7 @@ export function ProjectsScreen({ onOpenProject, onOpenTask }: { onOpenProject: (
                       <button
                         onClick={() => handleToggleExpand(p.id)}
                         aria-label={expanded.has(p.id) ? "Collapse tasks" : "Expand tasks"}
+                        aria-expanded={expanded.has(p.id)}
                         className="flex-none w-4 text-os-500"
                       >
                         {expanded.has(p.id) ? "▾" : "▸"}
