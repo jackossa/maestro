@@ -21,13 +21,17 @@ Resolved during brainstorming:
 - **Top-level tasks only.** The accordion does not nest subtasks. Subtask
   management remains exclusive to Project Detail's List view, which
   already supports it.
-- **Interaction level:** view, drag-reorder, and the completion checkbox.
-  No inline title editing, no inline assignee reassignment, no inline
-  add/delete. Clicking a task row (outside the checkbox/drag handle)
-  opens Project Detail with that task's drawer already open — the same
+- **Interaction level:** view, drag-reorder, the completion checkbox, and
+  (as of the 2026-08-08 list-view-inline-editing follow-up spec) inline
+  due date and status editing. No inline title editing, no inline
+  assignee reassignment, no inline add/delete. Clicking a task row
+  (outside the checkbox/drag handle/date input/status select) opens
+  Project Detail with that task's drawer already open — the same
   `pendingDrawerTaskId` mechanism `MyTasksScreen` already uses.
-- **Status is a read-only pill**, not an interactive dropdown — consistent
-  with due date already being plain text in this preview.
+- **Status is an interactive control** (as of the same follow-up spec),
+  not a read-only pill — see
+  `docs/superpowers/specs/2026-08-08-list-view-inline-editing-design.md`
+  for the current interaction and the reasoning for the reversal.
 - **Project order is shared/global**, stored as `sortOrder` directly on
   the `TaskProject` document — the same pattern `Task.sortOrder` already
   uses. For a shared project, any member's reorder is visible to
