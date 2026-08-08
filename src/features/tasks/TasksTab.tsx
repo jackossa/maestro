@@ -10,7 +10,7 @@ import { MyTasksScreen } from "./MyTasksScreen";
 export type TasksScreen = "my-tasks" | "projects" | "project-detail";
 
 export function TasksTab() {
-  const [screen, setScreen] = useState<TasksScreen>("my-tasks");
+  const [screen, setScreen] = useState<TasksScreen>("projects");
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [pendingDrawerTaskId, setPendingDrawerTaskId] = useState<string | null>(null);
 
@@ -28,20 +28,20 @@ export function TasksTab() {
     <div>
       <div className="flex gap-2 mb-6">
         <button
-          onClick={() => setScreen("my-tasks")}
-          className={`px-4 py-[7px] rounded-full font-bold text-[11px] tracking-[.06em] border ${
-            screen === "my-tasks" ? "bg-os-orange text-white border-os-orange" : "bg-white text-os-700 border-os-300"
-          }`}
-        >
-          MY TASKS
-        </button>
-        <button
           onClick={() => setScreen("projects")}
           className={`px-4 py-[7px] rounded-full font-bold text-[11px] tracking-[.06em] border ${
             screen === "projects" || screen === "project-detail" ? "bg-os-orange text-white border-os-orange" : "bg-white text-os-700 border-os-300"
           }`}
         >
           PROJECTS
+        </button>
+        <button
+          onClick={() => setScreen("my-tasks")}
+          className={`px-4 py-[7px] rounded-full font-bold text-[11px] tracking-[.06em] border ${
+            screen === "my-tasks" ? "bg-os-orange text-white border-os-orange" : "bg-white text-os-700 border-os-300"
+          }`}
+        >
+          MY TASKS
         </button>
       </div>
       {screen === "my-tasks" && <MyTasksScreen onOpenTask={openTaskFromMyTasks} />}
