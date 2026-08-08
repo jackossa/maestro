@@ -112,7 +112,7 @@ export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { proje
       ) : viewMode === "list" ? (
         <TaskListView projectId={projectId} projectName={project!.name} isShared={project!.isShared} tasks={tasks} onOpenDrawer={onOpenDrawer} />
       ) : (
-        <TaskBoardView tasks={tasks} onOpenDrawer={onOpenDrawer} />
+        <TaskBoardView projectId={projectId} tasks={tasks} onOpenDrawer={onOpenDrawer} />
       )}
     </div>
   );
