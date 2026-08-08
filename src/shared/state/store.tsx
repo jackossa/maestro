@@ -18,7 +18,7 @@ const MIGRATION_FLAG_KEY = "ossaFeeProposal.pipelineUnifyDone";
 const MIGRATION_FLAG_VALUE = "v1";
 
 export type ProjectTab = 1 | 2 | 3 | 7;
-export type View = "pipeline" | "project" | "settings" | "account";
+export type View = "pipeline" | "project" | "settings" | "account" | "tasks";
 
 function freshStore(): Store {
   const id = "p" + Date.now().toString(36);
@@ -118,6 +118,7 @@ interface AppContextShape {
   goToPipeline: () => void;
   goToSettings: () => void;
   goToAccount: () => void;
+  goToTasks: () => void;
   openProject: (id: string, tab?: ProjectTab) => void;
   setProjectTab: (tab: ProjectTab) => void;
   addProject: () => void;
@@ -186,6 +187,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const goToPipeline = useCallback(() => setState((s) => ({ ...s, view: "pipeline" })), []);
   const goToSettings = useCallback(() => setState((s) => ({ ...s, view: "settings" })), []);
   const goToAccount = useCallback(() => setState((s) => ({ ...s, view: "account" })), []);
+  const goToTasks = useCallback(() => setState((s) => ({ ...s, view: "tasks" })), []);
 
   const openProject = useCallback((id: string, tab?: ProjectTab) => {
     setState((s) => ({
@@ -372,6 +374,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       goToPipeline,
       goToSettings,
       goToAccount,
+      goToTasks,
       openProject,
       setProjectTab,
       addProject,
@@ -392,6 +395,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       goToPipeline,
       goToSettings,
       goToAccount,
+      goToTasks,
       openProject,
       setProjectTab,
       addProject,

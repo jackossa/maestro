@@ -1,0 +1,64 @@
+import { useState } from "react";
+import { ProjectsScreen } from "./ProjectsScreen";
+import { ProjectDetailScreen } from "./ProjectDetailScreen";
+import { MyTasksScreen } from "./MyTasksScreen";
+
+// Screen-switcher for the whole Task Management module, following the
+// same view-based (no-router) convention as the rest of Maestro. Filled
+// in incrementally: My Tasks (Task 16), Projects (Task 8), Project Detail
+// (Task 9) all render through here.
+export type TasksScreen = "my-tasks" | "projects" | "project-detail";
+
+export function TasksTab() {
+  const [screen, setScreen] = useState<TasksScreen>("projects");
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [pendingDrawerTaskId, setPendingDrawerTaskId] = useState<string | null>(null);
+
+  function openProject(id: string) {
+    setActiveProjectId(id);
+    setScreen("project-detail");
+  }
+
+  function openTaskFromMyTasks(projectId: string, taskId: string) {
+    setPendingDrawerTaskId(taskId);
+    openProject(projectId);
+  }
+
+  return (
+    <div>
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setScreen("projects")}
+          className={`px-4 py-[7px] rounded-full font-bold text-[11px] tracking-[.06em] border ${
+            screen === "projects" || screen === "project-detail" ? "bg-os-orange text-white border-os-orange" : "bg-white text-os-700 border-os-300"
+          }`}
+        >
+          PROJECTS
+        </button>
+        <button
+          onClick={() => setScreen("my-tasks")}
+          className={`px-4 py-[7px] rounded-full font-bold text-[11px] tracking-[.06em] border ${
+            screen === "my-tasks" ? "bg-os-orange text-white border-os-orange" : "bg-white text-os-700 border-os-300"
+          }`}
+        >
+          MY TASKS
+        </button>
+      </div>
+      {screen === "my-tasks" && <MyTasksScreen onOpenTask={openTaskFromMyTasks} />}
+      {screen === "projects" && <ProjectsScreen onOpenProject={openProject} onOpenTask={openTaskFromMyTasks} />}
+      {screen === "project-detail" && activeProjectId && (
+        // key: switching projects must give ProjectDetailScreen a genuinely
+        // new instance so its local viewMode/drawerTaskId/filters state
+        // resets, rather than relying on this branch happening to unmount
+        // between projects today.
+        <ProjectDetailScreen
+          key={activeProjectId}
+          projectId={activeProjectId}
+          onBack={() => setScreen("projects")}
+          initialDrawerTaskId={pendingDrawerTaskId}
+          onDrawerTaskConsumed={() => setPendingDrawerTaskId(null)}
+        />
+      )}
+    </div>
+  );
+}

@@ -52,8 +52,16 @@ function PipelineIcon() {
   );
 }
 
+function TasksIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none">
+      <path d="M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+    </svg>
+  );
+}
+
 export function Sidebar() {
-  const { state, goToPipeline, goToSettings, setProjectTab } = useAppState();
+  const { state, goToPipeline, goToSettings, goToTasks, setProjectTab } = useAppState();
   const { store, view, projectTab } = state;
   const currentProject = store.projects[store.currentId];
 
@@ -115,6 +123,15 @@ export function Sidebar() {
             >
               <PipelineIcon />
               <span>Pipeline</span>
+            </button>
+            <button
+              onClick={goToTasks}
+              className={`flex items-center gap-[11px] w-[calc(100%-20px)] mx-[10px] my-[2px] text-left px-[14px] py-[9px] border-0 rounded-full cursor-pointer font-medium text-[13px] ${
+                view === "tasks" ? "bg-grad-accent text-white shadow-[0_2px_10px_rgba(235,91,40,.35)]" : "bg-transparent text-white/70 hover:bg-white/[.08] hover:text-white"
+              }`}
+            >
+              <TasksIcon />
+              <span>Tasks</span>
             </button>
           </nav>
         )}

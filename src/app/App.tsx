@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "../shared/state/auth";
 import { AppStateProvider, useAppState } from "../shared/state/store";
+import { ToastProvider } from "../shared/state/toast";
 import { LoginScreen } from "../features/auth/LoginScreen";
 import { Sidebar } from "./Sidebar";
 import { ProjectInfoTab } from "../features/project-info/ProjectInfoTab";
@@ -10,6 +11,7 @@ import { SettingsTab } from "../features/settings/SettingsTab";
 import { PipelineTab } from "../features/pipeline/PipelineTab";
 import { ProposalBuilderTab } from "../features/proposal-builder/ProposalBuilderTab";
 import { AccountTab } from "../features/account/AccountTab";
+import { TasksTab } from "../features/tasks/TasksTab";
 
 // Pipeline is the app's home screen; opening a project switches to its
 // four-tab workspace; Settings is reachable from either. See the Pipeline
@@ -61,6 +63,7 @@ function Shell() {
           </div>
           {settingsVisible && <SettingsTab />}
           {state.view === "account" && <AccountTab />}
+          {state.view === "tasks" && <TasksTab />}
           {projectTabVisible && state.projectTab === 1 && <ProjectInfoTab />}
           {projectTabVisible && state.projectTab === 2 && <FeeCalculationTab />}
           {projectTabVisible && state.projectTab === 3 && <ProjectScheduleTab />}
@@ -79,12 +82,14 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AuthGate>
-        <AppStateProvider>
-          <Shell />
-        </AppStateProvider>
-      </AuthGate>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AuthGate>
+          <AppStateProvider>
+            <Shell />
+          </AppStateProvider>
+        </AuthGate>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
