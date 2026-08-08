@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "../shared/state/auth";
 import { AppStateProvider, useAppState } from "../shared/state/store";
+import { ToastProvider } from "../shared/state/toast";
 import { LoginScreen } from "../features/auth/LoginScreen";
 import { Sidebar } from "./Sidebar";
 import { ProjectInfoTab } from "../features/project-info/ProjectInfoTab";
@@ -79,12 +80,14 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AuthGate>
-        <AppStateProvider>
-          <Shell />
-        </AppStateProvider>
-      </AuthGate>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AuthGate>
+          <AppStateProvider>
+            <Shell />
+          </AppStateProvider>
+        </AuthGate>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
