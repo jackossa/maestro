@@ -23,11 +23,13 @@ function SortableTaskRow({ id, children }: { id: string; children: (dragHandle: 
 export function TaskListView({
   projectId,
   projectName,
+  isShared,
   tasks,
   onOpenDrawer,
 }: {
   projectId: string;
   projectName: string;
+  isShared: boolean;
   tasks: Task[];
   onOpenDrawer: (taskId: string) => void;
 }) {
@@ -149,6 +151,8 @@ export function TaskListView({
                   <div>
                     <TaskRow
                       task={task}
+                      projectId={projectId}
+                      isShared={isShared}
                       hasSubtasks={subtasks.length > 0}
                       expanded={isExpanded}
                       dragHandle={dragHandle}
@@ -169,6 +173,8 @@ export function TaskListView({
                                 {(subHandle) => (
                                   <TaskRow
                                     task={sub}
+                                    projectId={projectId}
+                                    isShared={isShared}
                                     compact
                                     dragHandle={subHandle}
                                     onToggleComplete={(c) => handleToggleComplete(sub, c)}

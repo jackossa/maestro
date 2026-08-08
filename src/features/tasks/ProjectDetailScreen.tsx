@@ -86,7 +86,7 @@ export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { proje
           ))}
         </div>
       ) : (
-        <TaskListView projectId={projectId} projectName={project!.name} tasks={tasks} onOpenDrawer={onOpenDrawer} />
+        <TaskListView projectId={projectId} projectName={project!.name} isShared={project!.isShared} tasks={tasks} onOpenDrawer={onOpenDrawer} />
       )}
     </div>
   );

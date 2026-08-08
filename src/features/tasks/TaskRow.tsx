@@ -1,4 +1,5 @@
 import { memo, useState, type ReactNode } from "react";
+import { AssigneePicker } from "./AssigneePicker";
 import type { Task } from "./types";
 
 // Shared between List view (Task 9/10) and My Tasks (Task 16). Height:
@@ -10,6 +11,8 @@ import type { Task } from "./types";
 // prop comparison is sufficient without a custom comparator.
 function TaskRowImpl({
   task,
+  projectId,
+  isShared,
   compact = false,
   showProject = false,
   hasSubtasks = false,
@@ -22,6 +25,8 @@ function TaskRowImpl({
   dragHandle,
 }: {
   task: Task;
+  projectId: string;
+  isShared: boolean;
   compact?: boolean;
   showProject?: boolean;
   hasSubtasks?: boolean;
@@ -94,7 +99,9 @@ function TaskRowImpl({
           <div className="text-[10.5px] text-os-500 truncate">{task.projectName}</div>
         )}
       </div>
-      <div className="flex-none w-[90px] text-[11.5px] text-os-600 truncate">{task.assigneeName || "—"}</div>
+      <div className="flex-none w-[100px]">
+        <AssigneePicker projectId={projectId} task={task} isShared={isShared} />
+      </div>
       <div className={`flex-none w-[76px] text-[11.5px] ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}>
         {task.dueDate || "—"}
       </div>
