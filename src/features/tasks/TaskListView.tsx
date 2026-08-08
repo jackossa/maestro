@@ -1,4 +1,7 @@
 import { useMemo, useState } from "react";
+import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { computeSortOrder } from "./sortOrder";
 import { createTask, deleteTask, updateTask } from "./tasksApi";
 import { TaskRow } from "./TaskRow";
@@ -6,8 +9,17 @@ import type { Task } from "./types";
 import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
 
-// No drag-and-drop yet -- Task 10 adds dnd-kit sortable wiring on top of
-// this rendering/inline-edit foundation.
+function SortableTaskRow({ id, children }: { id: string; children: (dragHandle: React.ReactNode) => React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const handle = (
+    <button {...attributes} {...listeners} aria-label="Drag to reorder" className="flex-none w-4 text-os-400 cursor-grab active:cursor-grabbing">
+      ⠿
+    </button>
+  );
+  return <div ref={setNodeRef} style={style}>{children(handle)}</div>;
+}
+
 export function TaskListView({
   projectId,
   projectName,
@@ -80,6 +92,45 @@ export function TaskListView({
     }
   }
 
+  async function handleReorderTop(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const activeIndex = topLevel.findIndex((t) => t.id === active.id);
+    const overIndex = topLevel.findIndex((t) => t.id === over.id);
+    if (activeIndex === -1 || overIndex === -1) return;
+    const reordered = [...topLevel];
+    const [moved] = reordered.splice(activeIndex, 1);
+    reordered.splice(overIndex, 0, moved);
+    const before = reordered[overIndex - 1]?.sortOrder ?? null;
+    const after = reordered[overIndex + 1]?.sortOrder ?? null;
+    try {
+      await updateTask(projectId, moved.id, { sortOrder: computeSortOrder(before, after) });
+    } catch (err) {
+      console.warn("[tasks] reorder failed", err);
+      showToast("Couldn't reorder. Please try again.");
+    }
+  }
+
+  async function handleReorderSubtasks(parentId: string, event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const siblings = subtasksByParent.get(parentId) || [];
+    const activeIndex = siblings.findIndex((t) => t.id === active.id);
+    const overIndex = siblings.findIndex((t) => t.id === over.id);
+    if (activeIndex === -1 || overIndex === -1) return;
+    const reordered = [...siblings];
+    const [moved] = reordered.splice(activeIndex, 1);
+    reordered.splice(overIndex, 0, moved);
+    const before = reordered[overIndex - 1]?.sortOrder ?? null;
+    const after = reordered[overIndex + 1]?.sortOrder ?? null;
+    try {
+      await updateTask(projectId, moved.id, { sortOrder: computeSortOrder(before, after) });
+    } catch (err) {
+      console.warn("[tasks] reorder failed", err);
+      showToast("Couldn't reorder. Please try again.");
+    }
+  }
+
   return (
     <div>
       {topLevel.length === 0 && !addingTop && (
@@ -87,59 +138,76 @@ export function TaskListView({
           No tasks yet — add your first one below.
         </p>
       )}
-      {topLevel.map((task) => {
-        const subtasks = subtasksByParent.get(task.id) || [];
-        const isExpanded = expanded.has(task.id);
-        return (
-          <div key={task.id}>
-            <TaskRow
-              task={task}
-              hasSubtasks={subtasks.length > 0}
-              expanded={isExpanded}
-              onToggleExpand={() =>
-                setExpanded((s) => { const next = new Set(s); next.has(task.id) ? next.delete(task.id) : next.add(task.id); return next; })
-              }
-              onToggleComplete={(c) => handleToggleComplete(task, c)}
-              onTitleChange={(t) => handleTitleChange(task, t)}
-              onOpenDrawer={() => onOpenDrawer(task.id)}
-              onDelete={() => handleDelete(task)}
-            />
-            {isExpanded && (
-              <div className="pl-[26px]">
-                {subtasks.map((sub) => (
-                  <TaskRow
-                    key={sub.id}
-                    task={sub}
-                    compact
-                    onToggleComplete={(c) => handleToggleComplete(sub, c)}
-                    onTitleChange={(t) => handleTitleChange(sub, t)}
-                    onOpenDrawer={() => onOpenDrawer(sub.id)}
-                    onDelete={() => handleDelete(sub)}
-                  />
-                ))}
-                {addingSubtaskFor === task.id ? (
-                  <input
-                    autoFocus
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onBlur={() => handleCreate(task.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleCreate(task.id);
-                      if (e.key === "Escape") { setDraft(""); setAddingSubtaskFor(null); }
-                    }}
-                    placeholder="Subtask title"
-                    className="box-border w-[calc(100%-8px)] m-1 px-[8px] py-[5px] border border-os-300 rounded-[6px] bg-[#fdf4e3] font-medium text-[12.5px] text-os-ink"
-                  />
-                ) : (
-                  <button onClick={() => setAddingSubtaskFor(task.id)} className="w-full text-left px-[8px] py-[6px] font-medium text-[11.5px] text-os-500 hover:text-os-orange-700">
-                    + Add subtask
-                  </button>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleReorderTop}>
+        <SortableContext items={topLevel.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+          {topLevel.map((task) => {
+            const subtasks = subtasksByParent.get(task.id) || [];
+            const isExpanded = expanded.has(task.id);
+            return (
+              <SortableTaskRow key={task.id} id={task.id}>
+                {(dragHandle) => (
+                  <div>
+                    <TaskRow
+                      task={task}
+                      hasSubtasks={subtasks.length > 0}
+                      expanded={isExpanded}
+                      dragHandle={dragHandle}
+                      onToggleExpand={() =>
+                        setExpanded((s) => { const next = new Set(s); next.has(task.id) ? next.delete(task.id) : next.add(task.id); return next; })
+                      }
+                      onToggleComplete={(c) => handleToggleComplete(task, c)}
+                      onTitleChange={(t) => handleTitleChange(task, t)}
+                      onOpenDrawer={() => onOpenDrawer(task.id)}
+                      onDelete={() => handleDelete(task)}
+                    />
+                    {isExpanded && (
+                      <div className="pl-[26px]">
+                        <DndContext collisionDetection={closestCenter} onDragEnd={(e) => handleReorderSubtasks(task.id, e)}>
+                          <SortableContext items={subtasks.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+                            {subtasks.map((sub) => (
+                              <SortableTaskRow key={sub.id} id={sub.id}>
+                                {(subHandle) => (
+                                  <TaskRow
+                                    task={sub}
+                                    compact
+                                    dragHandle={subHandle}
+                                    onToggleComplete={(c) => handleToggleComplete(sub, c)}
+                                    onTitleChange={(t) => handleTitleChange(sub, t)}
+                                    onOpenDrawer={() => onOpenDrawer(sub.id)}
+                                    onDelete={() => handleDelete(sub)}
+                                  />
+                                )}
+                              </SortableTaskRow>
+                            ))}
+                          </SortableContext>
+                        </DndContext>
+                        {addingSubtaskFor === task.id ? (
+                          <input
+                            autoFocus
+                            value={draft}
+                            onChange={(e) => setDraft(e.target.value)}
+                            onBlur={() => handleCreate(task.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleCreate(task.id);
+                              if (e.key === "Escape") { setDraft(""); setAddingSubtaskFor(null); }
+                            }}
+                            placeholder="Subtask title"
+                            className="box-border w-[calc(100%-8px)] m-1 px-[8px] py-[5px] border border-os-300 rounded-[6px] bg-[#fdf4e3] font-medium text-[12.5px] text-os-ink"
+                          />
+                        ) : (
+                          <button onClick={() => setAddingSubtaskFor(task.id)} className="w-full text-left px-[8px] py-[6px] font-medium text-[11.5px] text-os-500 hover:text-os-orange-700">
+                            + Add subtask
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
-              </div>
-            )}
-          </div>
-        );
-      })}
+              </SortableTaskRow>
+            );
+          })}
+        </SortableContext>
+      </DndContext>
       {addingTop ? (
         <input
           autoFocus
