@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ProjectsScreen } from "./ProjectsScreen";
+import { ProjectDetailScreen } from "./ProjectDetailScreen";
 
 // Screen-switcher for the whole Task Management module, following the
 // same view-based (no-router) convention as the rest of Maestro. Filled
@@ -39,10 +40,7 @@ export function TasksTab() {
       {screen === "my-tasks" && <p className="font-light text-[13.5px] text-os-500">My Tasks — coming online in a later task.</p>}
       {screen === "projects" && <ProjectsScreen onOpenProject={openProject} />}
       {screen === "project-detail" && activeProjectId && (
-        <p className="font-light text-[13.5px] text-os-500">
-          Project Detail for {activeProjectId} — coming online in a later task.{" "}
-          <button className="underline" onClick={() => setScreen("projects")}>Back</button>
-        </p>
+        <ProjectDetailScreen projectId={activeProjectId} onBack={() => setScreen("projects")} onOpenDrawer={() => {}} />
       )}
     </div>
   );
