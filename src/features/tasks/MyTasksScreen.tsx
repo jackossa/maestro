@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useMyTasks } from "./useMyTasks";
+import { useTaskProjectsList } from "./useTaskProjectsList";
 import { getDueDateBucket, type DueDateBucket } from "./dueDateBucket";
 import { TaskRow } from "./TaskRow";
 import { updateTask, deleteTask } from "./tasksApi";
@@ -16,6 +17,12 @@ const GROUPS: { bucket: DueDateBucket; label: string }[] = [
 export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, taskId: string) => void }) {
   const { showToast } = useToast();
   const { tasks, loading } = useMyTasks();
+  const { projects } = useTaskProjectsList();
+  const projectSharedById = useMemo(() => {
+    const map = new Map<string, boolean>();
+    projects.forEach((p) => map.set(p.id, p.isShared));
+    return map;
+  }, [projects]);
   const today = new Date().toISOString().slice(0, 10);
 
   const grouped = useMemo(() => {
@@ -84,7 +91,7 @@ export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, 
                 key={task.id}
                 task={task}
                 projectId={task.projectId}
-                isShared
+                isShared={projectSharedById.get(task.projectId) ?? false}
                 showProject
                 onToggleComplete={(c) => handleToggleComplete(task, c)}
                 onTitleChange={(t) => handleTitleChange(task, t)}
