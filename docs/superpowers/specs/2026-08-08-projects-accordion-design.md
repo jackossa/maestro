@@ -132,6 +132,16 @@ own sample code first shipped without it.
    is immediately visible in the other via the existing `onSnapshot`
    listener, since both read the same field.
 
+If two or more projects are expanded at once, each gets its own
+`DndContext`/`SortableContext` pair scoped to just that project's task
+list — mirroring how `TaskListView` already nests a separate `DndContext`
+per parent task's subtask list. A single shared context spanning
+multiple expanded projects' tasks would let a drag started in one
+project's list resolve against another project's `SortableContext`
+items, which is exactly the cross-project reassignment this spec rules
+out — so the scoping isn't optional polish, it's what keeps that out of
+reach structurally rather than by convention.
+
 ## Out of scope for this change
 
 - Subtask preview/reorder inside the accordion (Project Detail only).
