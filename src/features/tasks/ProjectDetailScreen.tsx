@@ -5,6 +5,7 @@ import { renameTaskProject, toggleTaskProjectShared } from "./taskProjectsApi";
 import { useTaskProjectsList } from "./useTaskProjectsList";
 import { useProjectTasks } from "./useProjectTasks";
 import { TaskListView } from "./TaskListView";
+import { TaskBoardView } from "./TaskBoardView";
 
 export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { projectId: string; onBack: () => void; onOpenDrawer: (taskId: string) => void }) {
   const { user } = useAuth();
@@ -14,6 +15,12 @@ export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { proje
   const { tasks, loading } = useProjectTasks(projectId);
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "board">(() => (localStorage.getItem(`tasksView.${projectId}`) as "list" | "board") || "list");
+
+  function setViewModePersist(mode: "list" | "board") {
+    setViewMode(mode);
+    localStorage.setItem(`tasksView.${projectId}`, mode);
+  }
 
   if (!project) {
     return (
@@ -79,14 +86,33 @@ export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { proje
         )}
       </div>
 
+      <div className="flex mb-4">
+        <button
+          onClick={() => setViewModePersist("list")}
+          className="font-bold text-[11.5px] px-4 py-[7px] border rounded-l-full cursor-pointer"
+          style={{ borderColor: viewMode === "list" ? "#EB5B28" : "#d2d1d3", background: viewMode === "list" ? "#EB5B28" : "#fff", color: viewMode === "list" ? "#fff" : "#57575a" }}
+        >
+          LIST
+        </button>
+        <button
+          onClick={() => setViewModePersist("board")}
+          className="font-bold text-[11.5px] px-4 py-[7px] border border-l-0 rounded-r-full cursor-pointer"
+          style={{ borderColor: viewMode === "board" ? "#EB5B28" : "#d2d1d3", background: viewMode === "board" ? "#EB5B28" : "#fff", color: viewMode === "board" ? "#fff" : "#57575a" }}
+        >
+          BOARD
+        </button>
+      </div>
+
       {loading ? (
         <div className="flex flex-col gap-1">
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="h-[46px] rounded-brand-sm bg-os-100 animate-pulse" />
           ))}
         </div>
-      ) : (
+      ) : viewMode === "list" ? (
         <TaskListView projectId={projectId} projectName={project!.name} isShared={project!.isShared} tasks={tasks} onOpenDrawer={onOpenDrawer} />
+      ) : (
+        <TaskBoardView tasks={tasks} onOpenDrawer={onOpenDrawer} />
       )}
     </div>
   );
