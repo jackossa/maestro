@@ -19,10 +19,19 @@ export function useTaskProjectsList(): { projects: TaskProject[]; loading: boole
       collection(db, "taskProjects"),
       or(where("isShared", "==", true), where("createdBy", "==", user.uid)),
     );
-    const unsubscribe = onSnapshot(q, (snap) => {
-      setProjects(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<TaskProject, "id">) })));
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setProjects(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<TaskProject, "id">) })));
+        setLoading(false);
+      },
+      // Without this, a denied query or a missing index leaves loading
+      // stuck true forever -- an eternal skeleton with no console signal.
+      (err) => {
+        console.warn("[tasks] projects listener failed", err);
+        setLoading(false);
+      },
+    );
     return unsubscribe;
   }, [user]);
 
