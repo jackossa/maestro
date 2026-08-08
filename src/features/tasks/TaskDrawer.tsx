@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Drawer } from "../../shared/components/Drawer";
 import { AssigneePicker } from "./AssigneePicker";
 import { deleteTask, updateTask } from "./tasksApi";
+import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
 import type { Task, TaskStatus } from "./types";
 
@@ -22,6 +23,7 @@ export function TaskDrawer({
   onClose: () => void;
   onSelectTask: (id: string) => void;
 }) {
+  const { user } = useAuth();
   const { showToast } = useToast();
   const task = tasks.find((t) => t.id === taskId) || null;
   const subtasks = task ? tasks.filter((t) => t.parentTaskId === task.id) : [];
@@ -50,11 +52,16 @@ export function TaskDrawer({
     }
   }
 
+  // Only ever reachable for a top-level task -- the Subtasks section is
+  // hidden entirely when the open task is itself a subtask (one level of
+  // nesting only, per the design spec). A third level would be written to
+  // Firestore but rendered nowhere: List only expands subtasks of
+  // top-level tasks and Board filters out everything with a parent.
   async function addSubtask() {
     const title = draft.trim();
     setDraft("");
     setAddingSubtask(false);
-    if (!title) return;
+    if (!title || !user) return;
     const { createTask } = await import("./tasksApi");
     const { computeSortOrder } = await import("./sortOrder");
     const siblingOrders = subtasks.map((s) => s.sortOrder);
@@ -64,7 +71,9 @@ export function TaskDrawer({
         parentTaskId: task!.id,
         title,
         sortOrder: computeSortOrder(siblingOrders.length ? Math.max(...siblingOrders) : null, null),
-        createdBy: task!.createdBy,
+        // The person creating the subtask right now -- not the parent
+        // task's original author, which is who task.createdBy names.
+        createdBy: user.uid,
         project: { name: task!.projectName },
       });
     } catch (err) {
@@ -131,30 +140,35 @@ export function TaskDrawer({
           />
         </div>
 
-        <div className="mb-6">
-          <div className="font-bold text-[10px] tracking-[.1em] uppercase text-os-500 mb-1">Subtasks</div>
-          {subtasks.map((s) => (
-            <button key={s.id} onClick={() => onSelectTask(s.id)} className="flex items-center gap-2 w-full text-left py-[6px] font-medium text-[12.5px] text-os-700 hover:text-os-orange-700">
-              <span className={`w-[14px] h-[14px] rounded-full border-2 flex-none ${s.completed ? "bg-os-orange border-os-orange" : "border-os-300"}`} />
-              <span className={s.completed ? "line-through text-os-500" : ""}>{s.title}</span>
-            </button>
-          ))}
-          {addingSubtask ? (
-            <input
-              autoFocus
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={addSubtask}
-              onKeyDown={(e) => { if (e.key === "Enter") addSubtask(); if (e.key === "Escape") { setDraft(""); setAddingSubtask(false); } }}
-              placeholder="Subtask title"
-              className="box-border w-full mt-1 px-[8px] py-[5px] border border-os-300 rounded-[6px] bg-[#fdf4e3] font-medium text-[12.5px] text-os-ink"
-            />
-          ) : (
-            <button onClick={() => setAddingSubtask(true)} className="mt-1 font-medium text-[12px] text-os-orange-700 hover:underline">
-              + Add subtask
-            </button>
-          )}
-        </div>
+        {/* One level of nesting only: a subtask never shows its own
+            Subtasks section, so the drawer can't create a grandchild that
+            no view would ever render. */}
+        {task.parentTaskId === null && (
+          <div className="mb-6">
+            <div className="font-bold text-[10px] tracking-[.1em] uppercase text-os-500 mb-1">Subtasks</div>
+            {subtasks.map((s) => (
+              <button key={s.id} onClick={() => onSelectTask(s.id)} className="flex items-center gap-2 w-full text-left py-[6px] font-medium text-[12.5px] text-os-700 hover:text-os-orange-700">
+                <span className={`w-[14px] h-[14px] rounded-full border-2 flex-none ${s.completed ? "bg-os-orange border-os-orange" : "border-os-300"}`} />
+                <span className={s.completed ? "line-through text-os-500" : ""}>{s.title}</span>
+              </button>
+            ))}
+            {addingSubtask ? (
+              <input
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onBlur={addSubtask}
+                onKeyDown={(e) => { if (e.key === "Enter") addSubtask(); if (e.key === "Escape") { setDraft(""); setAddingSubtask(false); } }}
+                placeholder="Subtask title"
+                className="box-border w-full mt-1 px-[8px] py-[5px] border border-os-300 rounded-[6px] bg-[#fdf4e3] font-medium text-[12.5px] text-os-ink"
+              />
+            ) : (
+              <button onClick={() => setAddingSubtask(true)} className="mt-1 font-medium text-[12px] text-os-orange-700 hover:underline">
+                + Add subtask
+              </button>
+            )}
+          </div>
+        )}
 
         <button onClick={handleDelete} className="font-bold text-[12px] text-os-500 hover:text-red-600">
           Delete Task

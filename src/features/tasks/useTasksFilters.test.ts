@@ -8,7 +8,7 @@ function makeTask(overrides: Partial<Task>): Task {
   return {
     id: "t1", projectId: "p1", parentTaskId: null, title: "Test", description: null,
     assigneeId: null, assigneeName: null, dueDate: null, status: "todo", completed: false,
-    sortOrder: 1000, createdAt: 0, updatedAt: 0, createdBy: "u1", projectName: "Project",
+    sortOrder: 1000, boardSortOrder: 1000, createdAt: 0, updatedAt: 0, createdBy: "u1", projectName: "Project",
     ...overrides,
   };
 }

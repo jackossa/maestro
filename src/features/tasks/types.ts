@@ -28,7 +28,14 @@ export interface Task {
   dueDate: string | null;
   status: TaskStatus;
   completed: boolean;
+  // Two independent manual orders. `sortOrder` is List view's project-wide
+  // order (and what useProjectTasks orders its query by); `boardSortOrder`
+  // is Board view's column-scoped order. They start equal at creation and
+  // then diverge, so reordering cards on the Board no longer scrambles the
+  // List's manual arrangement (or vice versa). See the design spec's
+  // "Sort order" section.
   sortOrder: number;
+  boardSortOrder: number;
   createdAt: number;
   updatedAt: number;
   createdBy: string;
