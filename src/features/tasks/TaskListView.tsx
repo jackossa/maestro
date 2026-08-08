@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { computeSortOrder } from "./sortOrder";
 import { createTask, deleteTask, updateTask } from "./tasksApi";
 import { TaskRow } from "./TaskRow";
-import type { Task } from "./types";
+import type { Task, TaskStatus } from "./types";
 import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
 
@@ -118,6 +118,30 @@ export function TaskListView({
     [projectId, showToast],
   );
 
+  const handleDueDateChange = useCallback(
+    async (id: string, dueDate: string | null) => {
+      try {
+        await updateTask(projectId, id, { dueDate });
+      } catch (err) {
+        console.warn("[tasks] due date change failed", err);
+        showToast("Couldn't update the due date. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
+
+  const handleStatusChange = useCallback(
+    async (id: string, status: TaskStatus) => {
+      try {
+        await updateTask(projectId, id, { status, completed: status === "complete" });
+      } catch (err) {
+        console.warn("[tasks] status change failed", err);
+        showToast("Couldn't update the status. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
+
   const handleDelete = useCallback(
     async (id: string) => {
       try {
@@ -195,6 +219,8 @@ export function TaskListView({
                       onToggleExpand={handleToggleExpand}
                       onToggleComplete={handleToggleComplete}
                       onTitleChange={handleTitleChange}
+                      onDueDateChange={handleDueDateChange}
+                      onStatusChange={handleStatusChange}
                       onOpenDrawer={onOpenDrawer}
                       onDelete={handleDelete}
                     />
@@ -213,6 +239,8 @@ export function TaskListView({
                                     dragHandle={subHandle}
                                     onToggleComplete={handleToggleComplete}
                                     onTitleChange={handleTitleChange}
+                                    onDueDateChange={handleDueDateChange}
+                                    onStatusChange={handleStatusChange}
                                     onOpenDrawer={onOpenDrawer}
                                     onDelete={handleDelete}
                                   />

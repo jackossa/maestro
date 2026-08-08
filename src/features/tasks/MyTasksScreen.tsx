@@ -5,7 +5,7 @@ import { getDueDateBucket, todayIso, type DueDateBucket } from "./dueDateBucket"
 import { TaskRow } from "./TaskRow";
 import { updateTask, deleteTask } from "./tasksApi";
 import { useToast } from "../../shared/state/toast";
-import type { Task } from "./types";
+import type { Task, TaskStatus } from "./types";
 
 const GROUPS: { bucket: DueDateBucket; label: string }[] = [
   { bucket: "overdue", label: "OVERDUE" },
@@ -67,6 +67,34 @@ export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, 
     [tasks, showToast],
   );
 
+  const handleDueDateChange = useCallback(
+    async (id: string, dueDate: string | null) => {
+      const task = tasks.find((t) => t.id === id);
+      if (!task) return;
+      try {
+        await updateTask(task.projectId, id, { dueDate });
+      } catch (err) {
+        console.warn("[tasks] my-tasks due date change failed", err);
+        showToast("Couldn't update the due date. Please try again.");
+      }
+    },
+    [tasks, showToast],
+  );
+
+  const handleStatusChange = useCallback(
+    async (id: string, status: TaskStatus) => {
+      const task = tasks.find((t) => t.id === id);
+      if (!task) return;
+      try {
+        await updateTask(task.projectId, id, { status, completed: status === "complete" });
+      } catch (err) {
+        console.warn("[tasks] my-tasks status change failed", err);
+        showToast("Couldn't update the status. Please try again.");
+      }
+    },
+    [tasks, showToast],
+  );
+
   const handleDelete = useCallback(
     async (id: string) => {
       const task = tasks.find((t) => t.id === id);
@@ -123,6 +151,8 @@ export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, 
                 showProject
                 onToggleComplete={handleToggleComplete}
                 onTitleChange={handleTitleChange}
+                onDueDateChange={handleDueDateChange}
+                onStatusChange={handleStatusChange}
                 onOpenDrawer={handleOpenDrawer}
                 onDelete={handleDelete}
               />

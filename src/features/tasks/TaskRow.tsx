@@ -1,7 +1,8 @@
 import { memo, useState, type ReactNode } from "react";
 import { AssigneePicker } from "./AssigneePicker";
 import { todayIso } from "./dueDateBucket";
-import type { Task } from "./types";
+import { STATUS_CLASS, STATUS_LABEL } from "./taskStatusStyle";
+import type { Task, TaskStatus } from "./types";
 
 // Shared between List view (Task 9/10) and My Tasks (Task 16). Height:
 // 44-52px top-level, 36-44px for a subtask (passed via `compact`). See the
@@ -27,6 +28,8 @@ function TaskRowImpl({
   onToggleExpand,
   onToggleComplete,
   onTitleChange,
+  onDueDateChange,
+  onStatusChange,
   onOpenDrawer,
   onDelete,
   dragHandle,
@@ -41,6 +44,8 @@ function TaskRowImpl({
   onToggleExpand?: (id: string) => void;
   onToggleComplete: (id: string, completed: boolean) => void;
   onTitleChange: (id: string, title: string) => void;
+  onDueDateChange: (id: string, dueDate: string | null) => void;
+  onStatusChange: (id: string, status: TaskStatus) => void;
   onOpenDrawer: (id: string) => void;
   onDelete: (id: string) => void;
   dragHandle?: ReactNode;
@@ -109,9 +114,21 @@ function TaskRowImpl({
       <div className="flex-none w-[100px] max-md:hidden">
         <AssigneePicker projectId={projectId} task={task} isShared={isShared} />
       </div>
-      <div className={`flex-none w-[76px] text-[11.5px] ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}>
-        {task.dueDate || "—"}
-      </div>
+      <input
+        type="date"
+        value={task.dueDate || ""}
+        onChange={(e) => onDueDateChange(task.id, e.target.value || null)}
+        className={`flex-none w-[76px] bg-transparent border-0 text-[11.5px] ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}
+      />
+      <select
+        value={task.status}
+        onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}
+        className={`flex-none appearance-none cursor-pointer border-0 px-2 py-[2px] rounded-full font-bold text-[9.5px] tracking-[.03em] ${STATUS_CLASS[task.status]}`}
+      >
+        {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
+          <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+        ))}
+      </select>
       <div className="flex-none opacity-0 group-hover:opacity-100 flex items-center gap-1">
         <button onClick={() => onOpenDrawer(task.id)} title="Open task" className="px-[7px] py-[3px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700">
           OPEN
