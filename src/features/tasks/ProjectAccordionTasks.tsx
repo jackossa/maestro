@@ -7,6 +7,7 @@ import { computeSortOrder } from "./sortOrder";
 import { updateTask } from "./tasksApi";
 import { useProjectTasks } from "./useProjectTasks";
 import { ProjectPreviewTaskRow } from "./ProjectPreviewTaskRow";
+import type { TaskStatus } from "./types";
 
 // Memoized drag handle, same reasoning as TaskListView's SortableTaskRow
 // and ProjectsScreen's SortableProjectRow.
@@ -49,6 +50,30 @@ export function ProjectAccordionTasks({ projectId, onOpenTask }: { projectId: st
       } catch (err) {
         console.warn("[tasks] toggle complete failed", err);
         showToast("Couldn't update the task. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
+
+  const handleDueDateChange = useCallback(
+    async (id: string, dueDate: string | null) => {
+      try {
+        await updateTask(projectId, id, { dueDate });
+      } catch (err) {
+        console.warn("[tasks] due date change failed", err);
+        showToast("Couldn't update the due date. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
+
+  const handleStatusChange = useCallback(
+    async (id: string, status: TaskStatus) => {
+      try {
+        await updateTask(projectId, id, { status, completed: status === "complete" });
+      } catch (err) {
+        console.warn("[tasks] status change failed", err);
+        showToast("Couldn't update the status. Please try again.");
       }
     },
     [projectId, showToast],
@@ -98,7 +123,14 @@ export function ProjectAccordionTasks({ projectId, onOpenTask }: { projectId: st
         {topLevel.map((task) => (
           <SortablePreviewRow key={task.id} id={task.id}>
             {(dragHandle) => (
-              <ProjectPreviewTaskRow task={task} dragHandle={dragHandle} onToggleComplete={handleToggleComplete} onOpen={handleOpen} />
+              <ProjectPreviewTaskRow
+                task={task}
+                dragHandle={dragHandle}
+                onToggleComplete={handleToggleComplete}
+                onDueDateChange={handleDueDateChange}
+                onStatusChange={handleStatusChange}
+                onOpen={handleOpen}
+              />
             )}
           </SortablePreviewRow>
         ))}

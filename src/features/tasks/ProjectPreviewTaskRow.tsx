@@ -1,41 +1,29 @@
 import { memo } from "react";
 import { Initial } from "./AssigneePicker";
 import { todayIso } from "./dueDateBucket";
+import { STATUS_CLASS, STATUS_LABEL } from "./taskStatusStyle";
 import type { Task, TaskStatus } from "./types";
 
-// Read-only-ish preview row for the Projects screen's accordion -- NOT a
-// reuse of TaskRow, which is built for full editing (inline title edit on
-// click, an interactive AssigneePicker, hover-reveal open/delete buttons).
-// This view intentionally excludes all of that: view, drag-reorder, and
-// the completion checkbox only. See the design spec's "Interaction level"
-// scope decision. Wrapped in memo for the same reason TaskRow is -- a
-// project with 100+ tasks shouldn't re-render every row on every drag.
-const STATUS_LABEL: Record<TaskStatus, string> = {
-  todo: "Todo",
-  in_progress: "In Progress",
-  complete: "Complete",
-};
-
-// Deliberately not reusing the SHARED/PRIVATE badge's bg-os-100/text-os-600
-// and bg-os-orange-050/text-os-orange-700 pairs here -- those exact
-// background/text combinations are already claimed by the project row's
-// sharing badge one level up, and reusing them would make "todo" read as
-// "private" and "in progress" read as "shared" at a glance.
-const STATUS_CLASS: Record<TaskStatus, string> = {
-  todo: "bg-os-200 text-os-700",
-  in_progress: "bg-os-blue/10 text-os-800",
-  complete: "bg-os-orange-100 text-os-orange-700",
-};
-
+// Preview row for the Projects screen's accordion -- NOT a reuse of
+// TaskRow, which additionally supports inline title editing and an
+// interactive AssigneePicker. This row supports view, drag-reorder, the
+// completion checkbox, and (per the 2026-08-08 list-view-inline-editing
+// spec) inline due date and status editing -- title and assignee stay
+// out. Wrapped in memo for the same reason TaskRow is -- a project with
+// 100+ tasks shouldn't re-render every row on every drag.
 function ProjectPreviewTaskRowImpl({
   task,
   dragHandle,
   onToggleComplete,
+  onDueDateChange,
+  onStatusChange,
   onOpen,
 }: {
   task: Task;
   dragHandle: React.ReactNode;
   onToggleComplete: (id: string, completed: boolean) => void;
+  onDueDateChange: (id: string, dueDate: string | null) => void;
+  onStatusChange: (id: string, status: TaskStatus) => void;
   onOpen: (id: string) => void;
 }) {
   const today = todayIso();
@@ -61,12 +49,21 @@ function ProjectPreviewTaskRowImpl({
         {task.assigneeId ? <Initial name={task.assigneeName || "?"} photoURL={null} /> : <div className="w-5 h-5 rounded-full flex-none border border-dashed border-os-300" />}
         <span className="text-[11px] text-os-600 truncate">{task.assigneeName || "Unassigned"}</span>
       </div>
-      <div className={`flex-none w-[76px] text-[11px] max-md:hidden ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}>
-        {task.dueDate || "—"}
-      </div>
-      <div className={`flex-none px-2 py-[2px] rounded-full font-bold text-[9.5px] tracking-[.03em] ${STATUS_CLASS[task.status]}`}>
-        {STATUS_LABEL[task.status]}
-      </div>
+      <input
+        type="date"
+        value={task.dueDate || ""}
+        onChange={(e) => onDueDateChange(task.id, e.target.value || null)}
+        className={`flex-none w-[76px] bg-transparent border-0 text-[11px] max-md:hidden ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}
+      />
+      <select
+        value={task.status}
+        onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}
+        className={`flex-none appearance-none cursor-pointer border-0 px-2 py-[2px] rounded-full font-bold text-[9.5px] tracking-[.03em] ${STATUS_CLASS[task.status]}`}
+      >
+        {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
+          <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+        ))}
+      </select>
     </div>
   );
 }
