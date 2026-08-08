@@ -25,6 +25,12 @@ export function AssigneePicker({ projectId, task, isShared }: { projectId: strin
   // else can see the project anyway). Shared: the full team roster.
   const options = isShared ? roster : roster.filter((m) => m.uid === user?.uid);
 
+  // The task doc only denormalizes assigneeName, so the trigger's avatar
+  // has to look the photo up on the roster (same source the option list
+  // below uses). Falls back to the initial when the roster hasn't loaded
+  // or the assignee is no longer in it.
+  const assignee = task.assigneeId ? roster.find((m) => m.uid === task.assigneeId) : undefined;
+
   async function pick(uid: string | null, name: string | null) {
     setOpen(false);
     try {
@@ -41,7 +47,7 @@ export function AssigneePicker({ projectId, task, isShared }: { projectId: strin
       onOpenChange={setOpen}
       trigger={
         <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-[6px] px-[6px] py-[2px] rounded-full hover:bg-os-100">
-          {task.assigneeId ? <Initial name={task.assigneeName || "?"} photoURL={null} /> : <div className="w-5 h-5 rounded-full flex-none border border-dashed border-os-300" />}
+          {task.assigneeId ? <Initial name={task.assigneeName || assignee?.displayName || "?"} photoURL={assignee?.photoURL ?? null} /> : <div className="w-5 h-5 rounded-full flex-none border border-dashed border-os-300" />}
           <span className="text-[11.5px] text-os-600 truncate max-w-[70px]">{task.assigneeName || "Unassigned"}</span>
         </button>
       }

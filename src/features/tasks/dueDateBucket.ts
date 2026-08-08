@@ -4,6 +4,21 @@
 // compare correctly with plain string comparison.
 export type DueDateBucket = "overdue" | "today" | "upcoming" | "no-date";
 
+// "Today" as the user's LOCAL calendar date. Deliberately not
+// `new Date().toISOString().slice(0, 10)` -- that returns the UTC calendar
+// date, which disagrees with what <input type="date"> writes (a local
+// date) for part of every day at any non-zero UTC offset, flagging
+// today's tasks overdue for hours at a time.
+//
+// Note: the two functions below take a `todayIso` STRING parameter that
+// shadows this function inside their bodies. That's intentional -- they
+// stay pure and take "today" as an argument so they're testable; only
+// callers reach for todayIso().
+export function todayIso(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export function getDueDateBucket(dueDate: string | null, todayIso: string): DueDateBucket {
   if (!dueDate) return "no-date";
   if (dueDate < todayIso) return "overdue";

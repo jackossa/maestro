@@ -8,6 +8,7 @@ import { TaskListView } from "./TaskListView";
 import { TaskBoardView } from "./TaskBoardView";
 import { TaskDrawer } from "./TaskDrawer";
 import { FilterBar } from "./FilterBar";
+import { todayIso } from "./dueDateBucket";
 import { applyTaskFilters, DEFAULT_FILTERS, type TaskFilters } from "./useTasksFilters";
 
 export function ProjectDetailScreen({
@@ -72,8 +73,7 @@ export function ProjectDetailScreen({
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const filteredTasks = applyTaskFilters(tasks, filters, today);
+  const filteredTasks = applyTaskFilters(tasks, filters, todayIso());
 
   return (
     <div>

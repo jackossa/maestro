@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -12,10 +12,18 @@ import { useToast } from "../../shared/state/toast";
 function SortableTaskRow({ id, children }: { id: string; children: (dragHandle: React.ReactNode) => React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
-  const handle = (
-    <button {...attributes} {...listeners} aria-label="Drag to reorder" className="flex-none w-4 text-os-400 cursor-grab active:cursor-grabbing">
-      ⠿
-    </button>
+  // Memoized because this element is handed to the memoized TaskRow as a
+  // prop: rebuilding it on every parent render would fail memo's shallow
+  // comparison (a fresh React element is a fresh object) and re-render
+  // every row regardless of how stable the callbacks are. `attributes` and
+  // `listeners` are themselves memoized by useSortable.
+  const handle = useMemo(
+    () => (
+      <button {...attributes} {...listeners} aria-label="Drag to reorder" className="flex-none w-4 text-os-400 cursor-grab active:cursor-grabbing">
+        ⠿
+      </button>
+    ),
+    [attributes, listeners],
   );
   return <div ref={setNodeRef} style={style}>{children(handle)}</div>;
 }
@@ -72,32 +80,55 @@ export function TaskListView({
     }
   }
 
-  async function handleToggleComplete(task: Task, completed: boolean) {
-    try {
-      await updateTask(projectId, task.id, { completed, status: completed ? "complete" : "todo" });
-    } catch (err) {
-      console.warn("[tasks] toggle complete failed", err);
-      showToast("Couldn't update the task. Please try again.");
-    }
-  }
+  // Defined once and passed by reference to every TaskRow (top-level and
+  // subtask alike) so memo(TaskRow)'s shallow prop comparison can actually
+  // succeed. Each takes the task id rather than closing over a Task, which
+  // is what lets one function serve every row. `updateTask`/`deleteTask`
+  // are module-level imports and `showToast` is a useCallback from the
+  // toast provider, so these identities only change when projectId does.
+  const handleToggleExpand = useCallback((id: string) => {
+    setExpanded((s) => {
+      const next = new Set(s);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
 
-  async function handleTitleChange(task: Task, title: string) {
-    try {
-      await updateTask(projectId, task.id, { title });
-    } catch (err) {
-      console.warn("[tasks] rename task failed", err);
-      showToast("Couldn't rename the task. Please try again.");
-    }
-  }
+  const handleToggleComplete = useCallback(
+    async (id: string, completed: boolean) => {
+      try {
+        await updateTask(projectId, id, { completed, status: completed ? "complete" : "todo" });
+      } catch (err) {
+        console.warn("[tasks] toggle complete failed", err);
+        showToast("Couldn't update the task. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
 
-  async function handleDelete(task: Task) {
-    try {
-      await deleteTask(projectId, task.id);
-    } catch (err) {
-      console.warn("[tasks] delete task failed", err);
-      showToast("Couldn't delete the task. Please try again.");
-    }
-  }
+  const handleTitleChange = useCallback(
+    async (id: string, title: string) => {
+      try {
+        await updateTask(projectId, id, { title });
+      } catch (err) {
+        console.warn("[tasks] rename task failed", err);
+        showToast("Couldn't rename the task. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await deleteTask(projectId, id);
+      } catch (err) {
+        console.warn("[tasks] delete task failed", err);
+        showToast("Couldn't delete the task. Please try again.");
+      }
+    },
+    [projectId, showToast],
+  );
 
   async function handleReorderTop(event: DragEndEvent) {
     const { active, over } = event;
@@ -161,13 +192,11 @@ export function TaskListView({
                       hasSubtasks={subtasks.length > 0}
                       expanded={isExpanded}
                       dragHandle={dragHandle}
-                      onToggleExpand={() =>
-                        setExpanded((s) => { const next = new Set(s); next.has(task.id) ? next.delete(task.id) : next.add(task.id); return next; })
-                      }
-                      onToggleComplete={(c) => handleToggleComplete(task, c)}
-                      onTitleChange={(t) => handleTitleChange(task, t)}
-                      onOpenDrawer={() => onOpenDrawer(task.id)}
-                      onDelete={() => handleDelete(task)}
+                      onToggleExpand={handleToggleExpand}
+                      onToggleComplete={handleToggleComplete}
+                      onTitleChange={handleTitleChange}
+                      onOpenDrawer={onOpenDrawer}
+                      onDelete={handleDelete}
                     />
                     {isExpanded && (
                       <div className="pl-[26px]">
@@ -182,10 +211,10 @@ export function TaskListView({
                                     isShared={isShared}
                                     compact
                                     dragHandle={subHandle}
-                                    onToggleComplete={(c) => handleToggleComplete(sub, c)}
-                                    onTitleChange={(t) => handleTitleChange(sub, t)}
-                                    onOpenDrawer={() => onOpenDrawer(sub.id)}
-                                    onDelete={() => handleDelete(sub)}
+                                    onToggleComplete={handleToggleComplete}
+                                    onTitleChange={handleTitleChange}
+                                    onOpenDrawer={onOpenDrawer}
+                                    onDelete={handleDelete}
                                   />
                                 )}
                               </SortableTaskRow>

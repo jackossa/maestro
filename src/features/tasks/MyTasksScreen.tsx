@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useMyTasks } from "./useMyTasks";
 import { useTaskProjectsList } from "./useTaskProjectsList";
-import { getDueDateBucket, type DueDateBucket } from "./dueDateBucket";
+import { getDueDateBucket, todayIso, type DueDateBucket } from "./dueDateBucket";
 import { TaskRow } from "./TaskRow";
 import { updateTask, deleteTask } from "./tasksApi";
 import { useToast } from "../../shared/state/toast";
@@ -23,7 +23,7 @@ export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, 
     projects.forEach((p) => map.set(p.id, p.isShared));
     return map;
   }, [projects]);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayIso();
 
   const grouped = useMemo(() => {
     const map = new Map<DueDateBucket, Task[]>();
@@ -34,32 +34,60 @@ export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, 
     return map;
   }, [tasks, today]);
 
-  async function handleToggleComplete(task: Task, completed: boolean) {
-    try {
-      await updateTask(task.projectId, task.id, { completed, status: completed ? "complete" : "todo" });
-    } catch (err) {
-      console.warn("[tasks] my-tasks toggle complete failed", err);
-      showToast("Couldn't update the task. Please try again.");
-    }
-  }
+  // One handler per action, shared by every row, so memo(TaskRow) can skip
+  // rows whose data didn't change. My Tasks spans projects, so each looks
+  // its task's projectId up by id rather than receiving a bound Task.
+  // Depending on `tasks` costs nothing: a new snapshot replaces every task
+  // object anyway, so those renders were never skippable.
+  const handleToggleComplete = useCallback(
+    async (id: string, completed: boolean) => {
+      const task = tasks.find((t) => t.id === id);
+      if (!task) return;
+      try {
+        await updateTask(task.projectId, id, { completed, status: completed ? "complete" : "todo" });
+      } catch (err) {
+        console.warn("[tasks] my-tasks toggle complete failed", err);
+        showToast("Couldn't update the task. Please try again.");
+      }
+    },
+    [tasks, showToast],
+  );
 
-  async function handleTitleChange(task: Task, title: string) {
-    try {
-      await updateTask(task.projectId, task.id, { title });
-    } catch (err) {
-      console.warn("[tasks] my-tasks rename failed", err);
-      showToast("Couldn't rename the task. Please try again.");
-    }
-  }
+  const handleTitleChange = useCallback(
+    async (id: string, title: string) => {
+      const task = tasks.find((t) => t.id === id);
+      if (!task) return;
+      try {
+        await updateTask(task.projectId, id, { title });
+      } catch (err) {
+        console.warn("[tasks] my-tasks rename failed", err);
+        showToast("Couldn't rename the task. Please try again.");
+      }
+    },
+    [tasks, showToast],
+  );
 
-  async function handleDelete(task: Task) {
-    try {
-      await deleteTask(task.projectId, task.id);
-    } catch (err) {
-      console.warn("[tasks] my-tasks delete failed", err);
-      showToast("Couldn't delete the task. Please try again.");
-    }
-  }
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const task = tasks.find((t) => t.id === id);
+      if (!task) return;
+      try {
+        await deleteTask(task.projectId, id);
+      } catch (err) {
+        console.warn("[tasks] my-tasks delete failed", err);
+        showToast("Couldn't delete the task. Please try again.");
+      }
+    },
+    [tasks, showToast],
+  );
+
+  const handleOpenDrawer = useCallback(
+    (id: string) => {
+      const task = tasks.find((t) => t.id === id);
+      if (task) onOpenTask(task.projectId, task.id);
+    },
+    [tasks, onOpenTask],
+  );
 
   if (loading) {
     return (
@@ -93,10 +121,10 @@ export function MyTasksScreen({ onOpenTask }: { onOpenTask: (projectId: string, 
                 projectId={task.projectId}
                 isShared={projectSharedById.get(task.projectId) ?? false}
                 showProject
-                onToggleComplete={(c) => handleToggleComplete(task, c)}
-                onTitleChange={(t) => handleTitleChange(task, t)}
-                onOpenDrawer={() => onOpenTask(task.projectId, task.id)}
-                onDelete={() => handleDelete(task)}
+                onToggleComplete={handleToggleComplete}
+                onTitleChange={handleTitleChange}
+                onOpenDrawer={handleOpenDrawer}
+                onDelete={handleDelete}
               />
             ))}
           </div>

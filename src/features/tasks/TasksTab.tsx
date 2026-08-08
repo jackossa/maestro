@@ -47,7 +47,12 @@ export function TasksTab() {
       {screen === "my-tasks" && <MyTasksScreen onOpenTask={openTaskFromMyTasks} />}
       {screen === "projects" && <ProjectsScreen onOpenProject={openProject} />}
       {screen === "project-detail" && activeProjectId && (
+        // key: switching projects must give ProjectDetailScreen a genuinely
+        // new instance so its local viewMode/drawerTaskId/filters state
+        // resets, rather than relying on this branch happening to unmount
+        // between projects today.
         <ProjectDetailScreen
+          key={activeProjectId}
           projectId={activeProjectId}
           onBack={() => setScreen("projects")}
           initialDrawerTaskId={pendingDrawerTaskId}
