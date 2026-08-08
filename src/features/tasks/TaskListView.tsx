@@ -25,12 +25,14 @@ export function TaskListView({
   projectName,
   isShared,
   tasks,
+  visibleTaskIds,
   onOpenDrawer,
 }: {
   projectId: string;
   projectName: string;
   isShared: boolean;
   tasks: Task[];
+  visibleTaskIds?: Set<string>;
   onOpenDrawer: (taskId: string) => void;
 }) {
   const { user } = useAuth();
@@ -40,7 +42,10 @@ export function TaskListView({
   const [addingTop, setAddingTop] = useState(false);
   const [draft, setDraft] = useState("");
 
-  const topLevel = useMemo(() => tasks.filter((t) => !t.parentTaskId), [tasks]);
+  const topLevel = useMemo(
+    () => tasks.filter((t) => !t.parentTaskId && (!visibleTaskIds || visibleTaskIds.has(t.id))),
+    [tasks, visibleTaskIds],
+  );
   const subtasksByParent = useMemo(() => {
     const map = new Map<string, Task[]>();
     tasks.filter((t) => t.parentTaskId).forEach((t) => {

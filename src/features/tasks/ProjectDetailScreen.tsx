@@ -7,6 +7,8 @@ import { useProjectTasks } from "./useProjectTasks";
 import { TaskListView } from "./TaskListView";
 import { TaskBoardView } from "./TaskBoardView";
 import { TaskDrawer } from "./TaskDrawer";
+import { FilterBar } from "./FilterBar";
+import { applyTaskFilters, DEFAULT_FILTERS, type TaskFilters } from "./useTasksFilters";
 
 export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; onBack: () => void }) {
   const { user } = useAuth();
@@ -18,6 +20,7 @@ export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; 
   const [draftName, setDraftName] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "board">(() => (localStorage.getItem(`tasksView.${projectId}`) as "list" | "board") || "list");
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<TaskFilters>(DEFAULT_FILTERS);
 
   function setViewModePersist(mode: "list" | "board") {
     setViewMode(mode);
@@ -54,6 +57,9 @@ export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; 
     }
   }
 
+  const today = new Date().toISOString().slice(0, 10);
+  const filteredTasks = applyTaskFilters(tasks, filters, today);
+
   return (
     <div>
       <button onClick={onBack} className="mb-4 font-medium text-[12.5px] text-os-600 hover:text-os-orange-700">← Projects</button>
@@ -88,21 +94,24 @@ export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; 
         )}
       </div>
 
-      <div className="flex mb-4">
-        <button
-          onClick={() => setViewModePersist("list")}
-          className="font-bold text-[11.5px] px-4 py-[7px] border rounded-l-full cursor-pointer"
-          style={{ borderColor: viewMode === "list" ? "#EB5B28" : "#d2d1d3", background: viewMode === "list" ? "#EB5B28" : "#fff", color: viewMode === "list" ? "#fff" : "#57575a" }}
-        >
-          LIST
-        </button>
-        <button
-          onClick={() => setViewModePersist("board")}
-          className="font-bold text-[11.5px] px-4 py-[7px] border border-l-0 rounded-r-full cursor-pointer"
-          style={{ borderColor: viewMode === "board" ? "#EB5B28" : "#d2d1d3", background: viewMode === "board" ? "#EB5B28" : "#fff", color: viewMode === "board" ? "#fff" : "#57575a" }}
-        >
-          BOARD
-        </button>
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <div className="flex">
+          <button
+            onClick={() => setViewModePersist("list")}
+            className="font-bold text-[11.5px] px-4 py-[7px] border rounded-l-full cursor-pointer"
+            style={{ borderColor: viewMode === "list" ? "#EB5B28" : "#d2d1d3", background: viewMode === "list" ? "#EB5B28" : "#fff", color: viewMode === "list" ? "#fff" : "#57575a" }}
+          >
+            LIST
+          </button>
+          <button
+            onClick={() => setViewModePersist("board")}
+            className="font-bold text-[11.5px] px-4 py-[7px] border border-l-0 rounded-r-full cursor-pointer"
+            style={{ borderColor: viewMode === "board" ? "#EB5B28" : "#d2d1d3", background: viewMode === "board" ? "#EB5B28" : "#fff", color: viewMode === "board" ? "#fff" : "#57575a" }}
+          >
+            BOARD
+          </button>
+        </div>
+        <FilterBar value={filters} onChange={setFilters} />
       </div>
 
       {loading ? (
@@ -112,9 +121,16 @@ export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; 
           ))}
         </div>
       ) : viewMode === "list" ? (
-        <TaskListView projectId={projectId} projectName={project!.name} isShared={project!.isShared} tasks={tasks} onOpenDrawer={setDrawerTaskId} />
+        <TaskListView
+          projectId={projectId}
+          projectName={project!.name}
+          isShared={project!.isShared}
+          tasks={tasks}
+          visibleTaskIds={new Set(filteredTasks.filter((t) => !t.parentTaskId).map((t) => t.id))}
+          onOpenDrawer={setDrawerTaskId}
+        />
       ) : (
-        <TaskBoardView projectId={projectId} tasks={tasks} onOpenDrawer={setDrawerTaskId} />
+        <TaskBoardView projectId={projectId} tasks={filteredTasks} onOpenDrawer={setDrawerTaskId} />
       )}
 
       <TaskDrawer
