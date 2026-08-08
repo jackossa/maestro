@@ -19,6 +19,7 @@ export async function createTaskProject(
   name: string,
   uid: string,
   displayName: string,
+  sortOrder: number,
 ): Promise<string> {
   const now = Date.now();
   const ref = await addDoc(collection(db, "taskProjects"), {
@@ -27,6 +28,7 @@ export async function createTaskProject(
     createdByName: displayName,
     isShared: false,
     members: [uid],
+    sortOrder,
     createdAt: now,
     updatedAt: now,
   });
@@ -43,6 +45,10 @@ export async function renameTaskProject(projectId: string, name: string): Promis
 
 export async function toggleTaskProjectShared(projectId: string, isShared: boolean): Promise<void> {
   await updateDoc(doc(db, "taskProjects", projectId), { isShared, updatedAt: Date.now() });
+}
+
+export async function updateTaskProjectSortOrder(projectId: string, sortOrder: number): Promise<void> {
+  await updateDoc(doc(db, "taskProjects", projectId), { sortOrder, updatedAt: Date.now() });
 }
 
 export async function deleteTaskProjectCascade(projectId: string): Promise<void> {

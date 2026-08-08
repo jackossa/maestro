@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
+import { computeSortOrder } from "./sortOrder";
+import { sortProjectsForDisplay } from "./sortProjects";
 import { createTaskProject, deleteTaskProjectCascade, toggleTaskProjectShared } from "./taskProjectsApi";
 import { useTaskProjectsList } from "./useTaskProjectsList";
 import type { TaskProject } from "./types";
@@ -21,7 +23,7 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
 
-  const sorted = useMemo(() => [...projects].sort((a, b) => b.updatedAt - a.updatedAt), [projects]);
+  const sorted = useMemo(() => sortProjectsForDisplay(projects), [projects]);
 
   async function handleCreate() {
     const name = newName.trim();
@@ -32,8 +34,10 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
     }
     setCreating(false);
     setNewName("");
+    const lastOrdered = [...sorted].reverse().find((p) => typeof p.sortOrder === "number");
+    const sortOrder = computeSortOrder(lastOrdered?.sortOrder ?? null, null);
     try {
-      const id = await createTaskProject(name, user.uid, user.displayName);
+      const id = await createTaskProject(name, user.uid, user.displayName, sortOrder);
       onOpenProject(id);
     } catch (err) {
       console.warn("[tasks] create project failed", err);

@@ -13,6 +13,11 @@ export interface TaskProject {
   createdByName: string;
   isShared: boolean;
   members: string[];
+  // Manual display order for the Projects screen, same spaced-integer
+  // pattern as Task.sortOrder. Optional because existing projects have
+  // none yet -- this is a migration-free rollout, not a backfill. See
+  // the design spec's "Data model changes" section.
+  sortOrder?: number;
   createdAt: number;
   updatedAt: number;
 }
