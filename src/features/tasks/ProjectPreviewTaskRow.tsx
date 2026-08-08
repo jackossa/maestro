@@ -15,9 +15,14 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
   complete: "Complete",
 };
 
+// Deliberately not reusing the SHARED/PRIVATE badge's bg-os-100/text-os-600
+// and bg-os-orange-050/text-os-orange-700 pairs here -- those exact
+// background/text combinations are already claimed by the project row's
+// sharing badge one level up, and reusing them would make "todo" read as
+// "private" and "in progress" read as "shared" at a glance.
 const STATUS_CLASS: Record<TaskStatus, string> = {
-  todo: "bg-os-100 text-os-600",
-  in_progress: "bg-os-orange-050 text-os-orange-700",
+  todo: "bg-os-200 text-os-700",
+  in_progress: "bg-os-blue/10 text-os-blue",
   complete: "bg-os-orange text-white",
 };
 
