@@ -1209,7 +1209,7 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
 
       {!loading &&
         sorted.map((p) => (
-          <div key={p.id} className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-050">
+          <div key={p.id} className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-50">
             <button onClick={() => onOpenProject(p.id)} className="flex-1 min-w-0 text-left font-bold text-[13.5px] text-os-ink truncate">
               {p.name}
             </button>
@@ -1366,7 +1366,7 @@ function TaskRowImpl({
 
   return (
     <div
-      className={`group flex items-center gap-[8px] px-[8px] border-b border-os-200 hover:bg-os-050 ${
+      className={`group flex items-center gap-[8px] px-[8px] border-b border-os-200 hover:bg-os-50 ${
         compact ? "min-h-[38px]" : "min-h-[46px]"
       }`}
     >
@@ -1957,11 +1957,11 @@ export function AssigneePicker({ projectId, task, isShared }: { projectId: strin
       }
       panelClassName="w-[200px] py-1"
     >
-      <button onClick={() => pick(null, null)} className="w-full text-left px-3 py-[7px] font-medium text-[12.5px] text-os-700 hover:bg-os-050">
+      <button onClick={() => pick(null, null)} className="w-full text-left px-3 py-[7px] font-medium text-[12.5px] text-os-700 hover:bg-os-50">
         Unassigned
       </button>
       {options.map((m) => (
-        <button key={m.uid} onClick={() => pick(m.uid, m.displayName)} className="w-full flex items-center gap-2 text-left px-3 py-[7px] font-medium text-[12.5px] text-os-700 hover:bg-os-050">
+        <button key={m.uid} onClick={() => pick(m.uid, m.displayName)} className="w-full flex items-center gap-2 text-left px-3 py-[7px] font-medium text-[12.5px] text-os-700 hover:bg-os-50">
           <Initial name={m.displayName} photoURL={m.photoURL} />
           {m.displayName}
         </button>
@@ -2078,7 +2078,7 @@ export function TaskBoardView({ tasks, onOpenDrawer }: { tasks: Task[]; onOpenDr
       {COLUMNS.map((col) => {
         const items = topLevel.filter((t) => t.status === col.status).sort((a, b) => a.sortOrder - b.sortOrder);
         return (
-          <div key={col.status} className="bg-os-050 rounded-brand-md p-[10px]">
+          <div key={col.status} className="bg-os-50 rounded-brand-md p-[10px]">
             <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600 mb-2">
               {col.label} <span className="font-medium text-os-500">({items.length})</span>
             </div>
@@ -2195,7 +2195,7 @@ function SortableCard({ task, subtaskCount, onOpen }: { task: Task; subtaskCount
 function Column({ status, label, items, subtaskCounts, onOpenDrawer }: { status: TaskStatus; label: string; items: Task[]; subtaskCounts: Map<string, number>; onOpenDrawer: (id: string) => void }) {
   const { setNodeRef } = useDroppable({ id: `column:${status}` });
   return (
-    <div ref={setNodeRef} className="bg-os-050 rounded-brand-md p-[10px] min-h-[80px]">
+    <div ref={setNodeRef} className="bg-os-50 rounded-brand-md p-[10px] min-h-[80px]">
       <div className="font-bold text-[10.5px] tracking-[.1em] uppercase text-os-600 mb-2">
         {label} <span className="font-medium text-os-500">({items.length})</span>
       </div>
@@ -2646,7 +2646,7 @@ function FilterDropdown<T extends string>({ label, value, options, onChange }: {
       panelClassName="w-[160px] py-1"
     >
       {options.map((o) => (
-        <button key={o.value} onClick={() => { onChange(o.value); setOpen(false); }} className="w-full text-left px-3 py-[6px] font-medium text-[12px] text-os-700 hover:bg-os-050">
+        <button key={o.value} onClick={() => { onChange(o.value); setOpen(false); }} className="w-full text-left px-3 py-[6px] font-medium text-[12px] text-os-700 hover:bg-os-50">
           {o.label}
         </button>
       ))}
