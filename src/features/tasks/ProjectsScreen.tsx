@@ -1,11 +1,32 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
 import { computeSortOrder } from "./sortOrder";
 import { sortProjectsForDisplay } from "./sortProjects";
-import { createTaskProject, deleteTaskProjectCascade, toggleTaskProjectShared } from "./taskProjectsApi";
+import { createTaskProject, deleteTaskProjectCascade, toggleTaskProjectShared, updateTaskProjectSortOrder } from "./taskProjectsApi";
 import { useTaskProjectsList } from "./useTaskProjectsList";
 import type { TaskProject } from "./types";
+
+// Memoized drag handle element, same pattern as TaskListView's
+// SortableTaskRow -- handing a freshly-allocated element to a memoized
+// child on every render would defeat memo's shallow comparison regardless
+// of how stable the row's other props are.
+function SortableProjectRow({ id, children }: { id: string; children: (dragHandle: React.ReactNode) => React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const handle = useMemo(
+    () => (
+      <button {...attributes} {...listeners} aria-label="Drag to reorder" className="flex-none w-4 text-os-400 cursor-grab active:cursor-grabbing">
+        ⠿
+      </button>
+    ),
+    [attributes, listeners],
+  );
+  return <div ref={setNodeRef} style={style}>{children(handle)}</div>;
+}
 
 // Compact rows, not cards -- mirrors Pipeline's existing list-row density.
 // Open-task count and nearest due date require reading each project's own
@@ -24,6 +45,11 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
   const [newName, setNewName] = useState("");
 
   const sorted = useMemo(() => sortProjectsForDisplay(projects), [projects]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   async function handleCreate() {
     const name = newName.trim();
@@ -63,6 +89,28 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
       showToast("Couldn't delete the project. Please try again.");
     }
   }
+
+  const handleReorder = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const activeIndex = sorted.findIndex((p) => p.id === active.id);
+      const overIndex = sorted.findIndex((p) => p.id === over.id);
+      if (activeIndex === -1 || overIndex === -1) return;
+      const reordered = [...sorted];
+      const [moved] = reordered.splice(activeIndex, 1);
+      reordered.splice(overIndex, 0, moved);
+      const before = reordered[overIndex - 1]?.sortOrder ?? null;
+      const after = reordered[overIndex + 1]?.sortOrder ?? null;
+      try {
+        await updateTaskProjectSortOrder(moved.id, computeSortOrder(before, after));
+      } catch (err) {
+        console.warn("[tasks] reorder project failed", err);
+        showToast("Couldn't reorder. Please try again.");
+      }
+    },
+    [sorted, showToast],
+  );
 
   return (
     <div>
@@ -105,34 +153,44 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
         </p>
       )}
 
-      {!loading &&
-        sorted.map((p) => (
-          <div key={p.id} className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-50">
-            <button onClick={() => onOpenProject(p.id)} className="flex-1 min-w-0 text-left font-bold text-[13.5px] text-os-ink truncate">
-              {p.name}
-            </button>
-            <div className="flex-none text-[11.5px] text-os-600 w-[120px] truncate">{p.createdByName}</div>
-            <button
-              onClick={() => handleToggleShared(p)}
-              disabled={p.createdBy !== user?.uid}
-              title={p.createdBy === user?.uid ? "Toggle sharing" : "Only the owner can change sharing"}
-              className={`flex-none px-[10px] py-[4px] rounded-full font-bold text-[10px] tracking-[.04em] border ${
-                p.isShared ? "bg-os-orange-050 text-os-orange-700 border-os-orange-300" : "bg-os-100 text-os-600 border-os-200"
-              } disabled:cursor-not-allowed`}
-            >
-              {p.isShared ? "SHARED" : "PRIVATE"}
-            </button>
-            {p.createdBy === user?.uid && (
-              <button
-                onClick={() => handleDelete(p)}
-                title="Delete project"
-                className="flex-none px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        ))}
+      {!loading && sorted.length > 0 && (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleReorder}>
+          <SortableContext items={sorted.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+            {sorted.map((p) => (
+              <SortableProjectRow key={p.id} id={p.id}>
+                {(dragHandle) => (
+                  <div className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-50">
+                    {dragHandle}
+                    <button onClick={() => onOpenProject(p.id)} className="flex-1 min-w-0 text-left font-bold text-[13.5px] text-os-ink truncate">
+                      {p.name}
+                    </button>
+                    <div className="flex-none text-[11.5px] text-os-600 w-[120px] truncate">{p.createdByName}</div>
+                    <button
+                      onClick={() => handleToggleShared(p)}
+                      disabled={p.createdBy !== user?.uid}
+                      title={p.createdBy === user?.uid ? "Toggle sharing" : "Only the owner can change sharing"}
+                      className={`flex-none px-[10px] py-[4px] rounded-full font-bold text-[10px] tracking-[.04em] border ${
+                        p.isShared ? "bg-os-orange-050 text-os-orange-700 border-os-orange-300" : "bg-os-100 text-os-600 border-os-200"
+                      } disabled:cursor-not-allowed`}
+                    >
+                      {p.isShared ? "SHARED" : "PRIVATE"}
+                    </button>
+                    {p.createdBy === user?.uid && (
+                      <button
+                        onClick={() => handleDelete(p)}
+                        title="Delete project"
+                        className="flex-none px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                )}
+              </SortableProjectRow>
+            ))}
+          </SortableContext>
+        </DndContext>
+      )}
     </div>
   );
 }
