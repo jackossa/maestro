@@ -99,7 +99,7 @@ function TaskRowImpl({
           <div className="text-[10.5px] text-os-500 truncate">{task.projectName}</div>
         )}
       </div>
-      <div className="flex-none w-[100px]">
+      <div className="flex-none w-[100px] max-md:hidden">
         <AssigneePicker projectId={projectId} task={task} isShared={isShared} />
       </div>
       <div className={`flex-none w-[76px] text-[11.5px] ${isOverdue ? "text-os-orange-700 font-bold" : "text-os-600"}`}>
