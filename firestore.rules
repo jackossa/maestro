@@ -21,13 +21,43 @@ service cloud.firestore {
     }
 
     match /taskProjects/{projectId} {
-      allow read, update, delete: if isTeamMember() && isProjectVisible(resource.data);
+      allow read: if isTeamMember() && isProjectVisible(resource.data);
       allow create: if isTeamMember() && request.resource.data.createdBy == request.auth.uid;
+
+      // Any teammate who can see the project may update it -- assignTask()
+      // arrayUnions onto the parent project's `members` field from whoever
+      // assigns a task, so update cannot be owner-only. What IS owner-only:
+      // ownership itself (`createdBy` can never change) and the sharing
+      // flag (only the owner may flip `isShared`, so a teammate cannot hide
+      // a shared project from everyone else).
+      allow update: if isTeamMember() && isProjectVisible(resource.data)
+        && request.resource.data.createdBy == resource.data.createdBy
+        && (request.resource.data.isShared == resource.data.isShared
+            || resource.data.createdBy == request.auth.uid);
+
+      // Deleting a project cascades to all of its tasks -- owner only.
+      allow delete: if isTeamMember() && resource.data.createdBy == request.auth.uid;
 
       match /tasks/{taskId} {
         allow read, create, update, delete: if isTeamMember()
           && isProjectVisible(get(/databases/$(database)/documents/taskProjects/$(projectId)).data);
       }
+    }
+
+    // Collection-group reads only (powers My Tasks -- see
+    // src/features/tasks/useMyTasks.ts). Rules written under a concrete
+    // parent path do NOT apply to collectionGroup() queries; only a
+    // recursive-wildcard match does, so this block must exist separately
+    // from the path-scoped one above, which still governs direct and
+    // subcollection access plus every write.
+    //
+    // Matching on assigneeId rather than get()-ing the parent project is
+    // both sufficient (the query's own where("assigneeId", "==", uid)
+    // constraint is what the rules engine validates against) and safer for
+    // a list operation: a get()-based rule fails the ENTIRE query if any
+    // single result's parent doc is unreadable.
+    match /{path=**}/tasks/{taskId} {
+      allow read: if isTeamMember() && resource.data.assigneeId == request.auth.uid;
     }
   }
 }
