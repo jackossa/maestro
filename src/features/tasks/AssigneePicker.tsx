@@ -6,7 +6,7 @@ import { useTeamRoster } from "./useTeamRoster";
 import { assignTask } from "./tasksApi";
 import type { Task } from "./types";
 
-function Initial({ name, photoURL }: { name: string; photoURL: string | null }) {
+export function Initial({ name, photoURL }: { name: string; photoURL: string | null }) {
   const letter = (name || "?").charAt(0).toUpperCase();
   return photoURL ? (
     <img src={photoURL} alt="" className="w-5 h-5 rounded-full flex-none" referrerPolicy="no-referrer" />

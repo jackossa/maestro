@@ -8,6 +8,7 @@ import { computeSortOrder } from "./sortOrder";
 import { sortProjectsForDisplay } from "./sortProjects";
 import { createTaskProject, deleteTaskProjectCascade, toggleTaskProjectShared, updateTaskProjectSortOrder } from "./taskProjectsApi";
 import { useTaskProjectsList } from "./useTaskProjectsList";
+import { ProjectAccordionTasks } from "./ProjectAccordionTasks";
 import type { TaskProject } from "./types";
 
 // Memoized drag handle element, same pattern as TaskListView's
@@ -37,12 +38,21 @@ function SortableProjectRow({ id, children }: { id: string; children: (dragHandl
 // -- "nearest upcoming due date if available" is satisfied at the project
 // level, just one screen deeper, rather than paying for it on every row
 // of a screen whose whole point is being fast to scan.
-export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) => void }) {
+export function ProjectsScreen({ onOpenProject, onOpenTask }: { onOpenProject: (id: string) => void; onOpenTask: (projectId: string, taskId: string) => void }) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { projects, loading } = useTaskProjectsList();
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const handleToggleExpand = useCallback((id: string) => {
+    setExpanded((s) => {
+      const next = new Set(s);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
 
   const sorted = useMemo(() => sortProjectsForDisplay(projects), [projects]);
 
@@ -159,31 +169,41 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
             {sorted.map((p) => (
               <SortableProjectRow key={p.id} id={p.id}>
                 {(dragHandle) => (
-                  <div className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-50">
-                    {dragHandle}
-                    <button onClick={() => onOpenProject(p.id)} className="flex-1 min-w-0 text-left font-bold text-[13.5px] text-os-ink truncate">
-                      {p.name}
-                    </button>
-                    <div className="flex-none text-[11.5px] text-os-600 w-[120px] truncate">{p.createdByName}</div>
-                    <button
-                      onClick={() => handleToggleShared(p)}
-                      disabled={p.createdBy !== user?.uid}
-                      title={p.createdBy === user?.uid ? "Toggle sharing" : "Only the owner can change sharing"}
-                      className={`flex-none px-[10px] py-[4px] rounded-full font-bold text-[10px] tracking-[.04em] border ${
-                        p.isShared ? "bg-os-orange-050 text-os-orange-700 border-os-orange-300" : "bg-os-100 text-os-600 border-os-200"
-                      } disabled:cursor-not-allowed`}
-                    >
-                      {p.isShared ? "SHARED" : "PRIVATE"}
-                    </button>
-                    {p.createdBy === user?.uid && (
+                  <div>
+                    <div className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-50">
+                      {dragHandle}
                       <button
-                        onClick={() => handleDelete(p)}
-                        title="Delete project"
-                        className="flex-none px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700"
+                        onClick={() => handleToggleExpand(p.id)}
+                        aria-label={expanded.has(p.id) ? "Collapse tasks" : "Expand tasks"}
+                        className="flex-none w-4 text-os-500"
                       >
-                        ×
+                        {expanded.has(p.id) ? "▾" : "▸"}
                       </button>
-                    )}
+                      <button onClick={() => onOpenProject(p.id)} className="flex-1 min-w-0 text-left font-bold text-[13.5px] text-os-ink truncate">
+                        {p.name}
+                      </button>
+                      <div className="flex-none text-[11.5px] text-os-600 w-[120px] truncate">{p.createdByName}</div>
+                      <button
+                        onClick={() => handleToggleShared(p)}
+                        disabled={p.createdBy !== user?.uid}
+                        title={p.createdBy === user?.uid ? "Toggle sharing" : "Only the owner can change sharing"}
+                        className={`flex-none px-[10px] py-[4px] rounded-full font-bold text-[10px] tracking-[.04em] border ${
+                          p.isShared ? "bg-os-orange-050 text-os-orange-700 border-os-orange-300" : "bg-os-100 text-os-600 border-os-200"
+                        } disabled:cursor-not-allowed`}
+                      >
+                        {p.isShared ? "SHARED" : "PRIVATE"}
+                      </button>
+                      {p.createdBy === user?.uid && (
+                        <button
+                          onClick={() => handleDelete(p)}
+                          title="Delete project"
+                          className="flex-none px-2 py-[5px] border border-os-300 bg-white text-os-600 font-bold text-[10px] rounded-full hover:border-os-orange hover:text-os-orange-700"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                    {expanded.has(p.id) && <ProjectAccordionTasks projectId={p.id} onOpenTask={onOpenTask} />}
                   </div>
                 )}
               </SortableProjectRow>

@@ -45,7 +45,7 @@ export function TasksTab() {
         </button>
       </div>
       {screen === "my-tasks" && <MyTasksScreen onOpenTask={openTaskFromMyTasks} />}
-      {screen === "projects" && <ProjectsScreen onOpenProject={openProject} />}
+      {screen === "projects" && <ProjectsScreen onOpenProject={openProject} onOpenTask={openTaskFromMyTasks} />}
       {screen === "project-detail" && activeProjectId && (
         // key: switching projects must give ProjectDetailScreen a genuinely
         // new instance so its local viewMode/drawerTaskId/filters state
