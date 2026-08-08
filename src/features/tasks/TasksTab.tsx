@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProjectsScreen } from "./ProjectsScreen";
 import { ProjectDetailScreen } from "./ProjectDetailScreen";
+import { MyTasksScreen } from "./MyTasksScreen";
 
 // Screen-switcher for the whole Task Management module, following the
 // same view-based (no-router) convention as the rest of Maestro. Filled
@@ -11,10 +12,16 @@ export type TasksScreen = "my-tasks" | "projects" | "project-detail";
 export function TasksTab() {
   const [screen, setScreen] = useState<TasksScreen>("my-tasks");
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [pendingDrawerTaskId, setPendingDrawerTaskId] = useState<string | null>(null);
 
   function openProject(id: string) {
     setActiveProjectId(id);
     setScreen("project-detail");
+  }
+
+  function openTaskFromMyTasks(projectId: string, taskId: string) {
+    setPendingDrawerTaskId(taskId);
+    openProject(projectId);
   }
 
   return (
@@ -37,10 +44,15 @@ export function TasksTab() {
           PROJECTS
         </button>
       </div>
-      {screen === "my-tasks" && <p className="font-light text-[13.5px] text-os-500">My Tasks — coming online in a later task.</p>}
+      {screen === "my-tasks" && <MyTasksScreen onOpenTask={openTaskFromMyTasks} />}
       {screen === "projects" && <ProjectsScreen onOpenProject={openProject} />}
       {screen === "project-detail" && activeProjectId && (
-        <ProjectDetailScreen projectId={activeProjectId} onBack={() => setScreen("projects")} />
+        <ProjectDetailScreen
+          projectId={activeProjectId}
+          onBack={() => setScreen("projects")}
+          initialDrawerTaskId={pendingDrawerTaskId}
+          onDrawerTaskConsumed={() => setPendingDrawerTaskId(null)}
+        />
       )}
     </div>
   );

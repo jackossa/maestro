@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../shared/state/auth";
 import { useToast } from "../../shared/state/toast";
 import { renameTaskProject, toggleTaskProjectShared } from "./taskProjectsApi";
@@ -10,7 +10,17 @@ import { TaskDrawer } from "./TaskDrawer";
 import { FilterBar } from "./FilterBar";
 import { applyTaskFilters, DEFAULT_FILTERS, type TaskFilters } from "./useTasksFilters";
 
-export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; onBack: () => void }) {
+export function ProjectDetailScreen({
+  projectId,
+  onBack,
+  initialDrawerTaskId = null,
+  onDrawerTaskConsumed,
+}: {
+  projectId: string;
+  onBack: () => void;
+  initialDrawerTaskId?: string | null;
+  onDrawerTaskConsumed?: () => void;
+}) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { projects } = useTaskProjectsList();
@@ -19,8 +29,13 @@ export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "board">(() => (localStorage.getItem(`tasksView.${projectId}`) as "list" | "board") || "list");
-  const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
+  const [drawerTaskId, setDrawerTaskId] = useState<string | null>(initialDrawerTaskId);
   const [filters, setFilters] = useState<TaskFilters>(DEFAULT_FILTERS);
+
+  useEffect(() => {
+    if (initialDrawerTaskId) onDrawerTaskConsumed?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function setViewModePersist(mode: "list" | "board") {
     setViewMode(mode);
