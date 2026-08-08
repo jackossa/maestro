@@ -103,7 +103,7 @@ export function ProjectsScreen({ onOpenProject }: { onOpenProject: (id: string) 
 
       {!loading &&
         sorted.map((p) => (
-          <div key={p.id} className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-050">
+          <div key={p.id} className="flex items-center gap-3 min-h-[46px] px-[10px] border-b border-os-200 hover:bg-os-50">
             <button onClick={() => onOpenProject(p.id)} className="flex-1 min-w-0 text-left font-bold text-[13.5px] text-os-ink truncate">
               {p.name}
             </button>
