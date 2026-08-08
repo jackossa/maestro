@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
-import { DndContext, DragOverlay, closestCenter, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, PointerSensor, closestCenter, useSensor, useSensors, useDroppable, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useDroppable } from "@dnd-kit/core";
 import { computeSortOrder } from "./sortOrder";
 import { moveTaskToStatus } from "./tasksApi";
 import { useToast } from "../../shared/state/toast";
@@ -68,7 +67,7 @@ export function TaskBoardView({ projectId, tasks, onOpenDrawer }: { projectId: s
   async function handleDragEnd(event: DragEndEvent) {
     setActiveId(null);
     const { active, over } = event;
-    if (!over) return;
+    if (!over || active.id === over.id) return;
     const activeTask = topLevel.find((t) => t.id === active.id);
     if (!activeTask) return;
     const targetStatus = columnOf(String(over.id));
@@ -93,8 +92,11 @@ export function TaskBoardView({ projectId, tasks, onOpenDrawer }: { projectId: s
 
   const activeTask = activeId ? topLevel.find((t) => t.id === activeId) : null;
 
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+
   return (
     <DndContext
+      sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={(e: DragStartEvent) => setActiveId(String(e.active.id))}
       onDragEnd={handleDragEnd}
