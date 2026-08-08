@@ -40,7 +40,7 @@ export function TasksTab() {
       {screen === "my-tasks" && <p className="font-light text-[13.5px] text-os-500">My Tasks — coming online in a later task.</p>}
       {screen === "projects" && <ProjectsScreen onOpenProject={openProject} />}
       {screen === "project-detail" && activeProjectId && (
-        <ProjectDetailScreen projectId={activeProjectId} onBack={() => setScreen("projects")} onOpenDrawer={() => {}} />
+        <ProjectDetailScreen projectId={activeProjectId} onBack={() => setScreen("projects")} />
       )}
     </div>
   );

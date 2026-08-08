@@ -6,8 +6,9 @@ import { useTaskProjectsList } from "./useTaskProjectsList";
 import { useProjectTasks } from "./useProjectTasks";
 import { TaskListView } from "./TaskListView";
 import { TaskBoardView } from "./TaskBoardView";
+import { TaskDrawer } from "./TaskDrawer";
 
-export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { projectId: string; onBack: () => void; onOpenDrawer: (taskId: string) => void }) {
+export function ProjectDetailScreen({ projectId, onBack }: { projectId: string; onBack: () => void }) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { projects } = useTaskProjectsList();
@@ -16,6 +17,7 @@ export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { proje
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "board">(() => (localStorage.getItem(`tasksView.${projectId}`) as "list" | "board") || "list");
+  const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
 
   function setViewModePersist(mode: "list" | "board") {
     setViewMode(mode);
@@ -110,10 +112,19 @@ export function ProjectDetailScreen({ projectId, onBack, onOpenDrawer }: { proje
           ))}
         </div>
       ) : viewMode === "list" ? (
-        <TaskListView projectId={projectId} projectName={project!.name} isShared={project!.isShared} tasks={tasks} onOpenDrawer={onOpenDrawer} />
+        <TaskListView projectId={projectId} projectName={project!.name} isShared={project!.isShared} tasks={tasks} onOpenDrawer={setDrawerTaskId} />
       ) : (
-        <TaskBoardView projectId={projectId} tasks={tasks} onOpenDrawer={onOpenDrawer} />
+        <TaskBoardView projectId={projectId} tasks={tasks} onOpenDrawer={setDrawerTaskId} />
       )}
+
+      <TaskDrawer
+        projectId={projectId}
+        taskId={drawerTaskId}
+        tasks={tasks}
+        isShared={project!.isShared}
+        onClose={() => setDrawerTaskId(null)}
+        onSelectTask={setDrawerTaskId}
+      />
     </div>
   );
 }
